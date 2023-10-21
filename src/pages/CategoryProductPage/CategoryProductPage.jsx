@@ -1,18 +1,35 @@
 import React from 'react'
 import NavbarComponent from '../../components/NavbarComponent/NavbarComponent'
 import CardComponent from '../../components/CardComponent/CardComponent'
-import { Col, Row } from 'antd'
+import { Col, Pagination, Row } from 'antd'
+import { WrapperNavbar, WrapperProducts } from './style'
+import FooterComponent from '../../components/FooterComponent/FooterComponent'
 
 const CategoryProductPage = () => {
+  const onChange = () => {}
   return (
-    <Row style={{padding: '0 250px', flexWrap: 'nowrap', marginTop: '10px'}}>
-        <Col span={4} style={{background: '#cccc',marginRight: '10px', padding: '10px', borderRadius: '6px'}}>
-            <NavbarComponent></NavbarComponent>
-        </Col>
-        <Col span={20}>
-            <CardComponent></CardComponent>
-        </Col>
-    </Row>
+    <div style={{ width: '100%', backgroundColor: '#efefef' }}>
+      <div style={{ padding: '20px 200px 0px 200px' }}>
+        <Row style={{ flexWrap: 'nowrap' }}>
+            <WrapperNavbar span={4}>
+              <NavbarComponent></NavbarComponent>
+            </WrapperNavbar>
+            <Col span={20}>
+              <WrapperProducts>
+                  <CardComponent></CardComponent>
+                  <CardComponent></CardComponent>
+                  <CardComponent></CardComponent>
+                  <CardComponent></CardComponent>
+                  <CardComponent></CardComponent>
+                  <CardComponent></CardComponent>
+              </WrapperProducts>
+              <Pagination showQuickJumper defaultCurrent={2} total={100} onChange={onChange} 
+                style={{textAlign: 'center', marginTop: '20px'}}/>
+            </Col>
+        </Row>
+      </div>
+      <FooterComponent></FooterComponent>
+    </div>
   )
 }
 

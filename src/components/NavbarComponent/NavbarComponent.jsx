@@ -7,14 +7,14 @@ const NavbarComponent = () => {
     const renderContent = (type, options) => {
         switch(type) {
             case 'text':
-                return options.map((option) => {
-                    return <WrapperTextValue>{option}</WrapperTextValue>
+                return options.map((option, index) => {
+                    return <WrapperTextValue key={index}>{option}</WrapperTextValue>
                 })
             case 'checkbox':
                 return (
                     <Checkbox.Group style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }} onChange={onChange}>
-                        {options.map((option) => {
-                            return <Checkbox value={option.value}>{option.label}</Checkbox> 
+                        {options.map((option, index) => {
+                            return <Checkbox key={index} value={option.value}>{option.label}</Checkbox> 
                         })}
                     </Checkbox.Group>
                 )

@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleNameProduct, WrapperCardStyle, WrapperImageStyle, WrapperPriceDiscountText, WrapperPriceText, WrapperReportText } from './style'
+import { StyleNameProduct, WrapperCardStyle, WrapperImageStyle, WrapperPriceDiscountText, WrapperPriceText, WrapperReportText, WrapperStyleTextSell } from './style'
 import { StarFilled } from '@ant-design/icons';
 import logo from '../../assets/images/chinhhang.png'
 import product1 from '../../assets/images/products/bfdb22e1a3d97b8722c8-1.jpg'
@@ -17,12 +17,12 @@ const CardComponent = () => {
         <StyleNameProduct>Cơ cấu tay gắp Robot nâng hạ sản phẩm</StyleNameProduct>
         <WrapperReportText>
             <span style={{marginRight: '4px'}}>
-                <span>4.5</span><StarFilled style={{fontSize: '12px', color: 'yellow'}} />
+                <span>4.5</span><StarFilled style={{fontSize: '12px', color: 'rgb(253, 216, 54)'}} />
             </span>
-            <span> | Đã bán 1000+</span>
+            <WrapperStyleTextSell> | Đã bán 1000+</WrapperStyleTextSell>
         </WrapperReportText>
         <WrapperPriceText>
-            1.000.000đ 
+            <span style={{ marginRight: '8px' }}>1.000.000đ</span>
             <WrapperPriceDiscountText>-5%</WrapperPriceDiscountText>
         </WrapperPriceText>
     </WrapperCardStyle>

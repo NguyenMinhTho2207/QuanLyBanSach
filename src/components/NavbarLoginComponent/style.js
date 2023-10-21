@@ -4,8 +4,10 @@ import { styled } from "styled-components";
 export const WrapperHeaderContainerLogin = styled.div `
     display: flex;
     justify-content: space-between;
-    padding: 2px 250px;
+    padding: 2px 200px;
     background-color: #FB5431;
+    height: 40px;
+    align-items: center;
 `
 
 export const WrapperHeaderLogin = styled.ul `
@@ -14,6 +16,7 @@ export const WrapperHeaderLogin = styled.ul `
     margin: 0;
     font-size: 14px;
     list-style: none;
+    align-items: center;
 
     li {
         a {

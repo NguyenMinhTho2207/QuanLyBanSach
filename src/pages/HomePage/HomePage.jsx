@@ -5,18 +5,19 @@ import slide2 from '../../assets/images/slide2.jpg'
 import { Col, Row } from 'antd'
 import CardComponent from '../../components/CardComponent/CardComponent'
 import { WrapperButtonMore, WrapperProducts } from './style'
+import FooterComponent from '../../components/FooterComponent/FooterComponent'
 // import NavbarComponent from '../../components/NavbarComponent/NavbarComponent'
 
 const HomePage = () => {
   return (
-    <div>
+    <div style={{ backgroundColor: '#efefef' }}>
       <Row>
         <Col span={24}>
           <SliderComponent arrImages={[slide1, slide2]}></SliderComponent>
         </Col>
       </Row>
 
-      <div className="container" style={{padding: '0px 250px', marginTop: '30px', height: '1000px'}}>
+      <div className="container" style={{padding: '20px 200px 0px 200px', height: '1000px' }}>
         {/* <NavbarComponent></NavbarComponent> */}
         <WrapperProducts>
           <CardComponent></CardComponent>
@@ -38,7 +39,7 @@ const HomePage = () => {
           </WrapperButtonMore>
         </div>
       </div>
-
+      <FooterComponent></FooterComponent>
     </div>
   )
 }

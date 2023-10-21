@@ -29,7 +29,7 @@ const NavbarHeaderComponent = () => {
     }, []);
 
     return (
-        <div style={{ position: isFixed ? 'fixed' : 'static', top: 0, left: 0, right: 0, zIndex: 999 }}>
+        <div style={{ position: isFixed ? 'fixed' : 'static', top: '40px', left: 0, right: 0, zIndex: 999 }}>
             <WrapperNavbarMenuContainer>
                 <Col span={24}>
                     <WrapperNavbarMenuContain>

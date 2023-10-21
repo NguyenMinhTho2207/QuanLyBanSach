@@ -13,7 +13,7 @@ export const WrapperNavbarMenuContain = styled.ul `
     color: white;
     font-weight: 700;
     font-size: 14px;
-    padding: 0 250px;
+    padding: 0 200px;
     font-size: 16px;
     line-height: 16px;
     margin: 0;
@@ -23,7 +23,7 @@ export const WrapperNavbarMenuContain = styled.ul `
             height: 50px; /* Đặt chiều cao của thẻ a */
             display: flex;
             align-items: center;
-            padding: 0 40px; /* Thêm khoảng cách bên trái và phải cho thẻ a */
+            padding: 0 50px; /* Thêm khoảng cách bên trái và phải cho thẻ a */
             text-decoration: none; /* Loại bỏ gạch chân mặc định */
             color: white; /* Đặt màu sắc */
             transition: background-color 0.3s; /* Thêm hiệu ứng chuyển đổi cho màu nền */
