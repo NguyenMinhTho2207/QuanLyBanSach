@@ -28,9 +28,8 @@ const FooterComponent = () => {
                     height="200" 
                     style={{ border: 0 }} 
                     title="Địa chỉ" 
-                    allowfullscreen="" 
                     loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                ></iframe>
             </div>
         </WrapperFooterContainer>
     </div>
