@@ -34,9 +34,11 @@ const NavbarHeaderComponent = () => {
                 <Col span={24}>
                     <WrapperNavbarMenuContain>
                         {navArray.map((navItem, index) => (
-                            <li key={index}>
-                                <a href={navItem.link}>{navItem.text}</a>
-                            </li>
+                            <Col span={5}>
+                                <li key={index}>
+                                    <a href={navItem.link}>{navItem.text}</a>
+                                </li>
+                            </Col>
                         ))}
                     </WrapperNavbarMenuContain>
                 </Col>

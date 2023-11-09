@@ -23,7 +23,7 @@ export const WrapperNavbarMenuContain = styled.ul `
             height: 50px; /* Đặt chiều cao của thẻ a */
             display: flex;
             align-items: center;
-            padding: 0 50px; /* Thêm khoảng cách bên trái và phải cho thẻ a */
+            justify-content: center; Thêm khoảng cách bên trái và phải cho thẻ a */
             text-decoration: none; /* Loại bỏ gạch chân mặc định */
             color: white; /* Đặt màu sắc */
             transition: background-color 0.3s; /* Thêm hiệu ứng chuyển đổi cho màu nền */
