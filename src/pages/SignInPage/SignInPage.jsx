@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { WrapperContainerLeft, WrapperContainerRight, WrapperTextLight } from './style'
 import InputForm from '../../components/InputForm/InputForm'
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
@@ -9,17 +9,42 @@ import { useNavigate } from 'react-router-dom'
 import * as UserService from '../../services/UserService'
 import { useMutationHooks } from '../../hooks/userMutationHook'
 import Loading from '../../components/LoadingComponent/Loading'
+import * as message from '../../components/Message/Message'
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from 'react-redux'
+import { updateUser } from '../../redux/slice/userSlice'
 
 const SignInPage = () => {
   let [isShowPassword, setIsShowPassword] = useState(false);
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
+  let dispatch = useDispatch();
   let navigate = useNavigate();
   let mutation = useMutationHooks(
     data => UserService.loginUser(data)
   )
 
-  let { data, isPending } = mutation;
+  let { data, isPending, isSuccess } = mutation;
+
+  useEffect(() => {
+    if (isSuccess) {
+      message.success();
+      navigate('/');
+      localStorage.setItem('access_token', data?.access_token);
+      if (data?.access_token) {
+        let decoded = jwtDecode(data?.access_token);
+
+        if (decoded?.id) {
+          handleGetDetailsUser(decoded?.id, data?.access_token)
+        }
+      }
+    }
+  }, [isSuccess]);
+
+  let handleGetDetailsUser = async (id, token) => {
+    let res = await UserService.getDetailsUser(id, token);
+    dispatch(updateUser({ ...res?.data, access_token: token }));
+  }
 
   let handleOnChangeEmail = (value) => {
     setEmail(value);
@@ -34,8 +59,6 @@ const SignInPage = () => {
       email,
       password
     });
-
-    console.log('mutation: ', mutation);
   }
 
   return (
@@ -49,6 +72,7 @@ const SignInPage = () => {
             placeholder='abc@gmail.com' 
             value={email} 
             onChange={handleOnChangeEmail}
+            autoComplete="new-password"
           >
           </InputForm>
           <div style={{ position: 'relative' }}>

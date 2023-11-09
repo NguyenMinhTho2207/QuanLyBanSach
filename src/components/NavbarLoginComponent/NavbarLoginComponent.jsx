@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { WrapperHeaderContainerLogin, WrapperHeaderLogin } from './style'
-import { ShoppingCartOutlined } from '@ant-design/icons';
+import { ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { Badge } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const NavbarLoginComponent = () => {
     const navigate = useNavigate();
+    const user = useSelector((state) => state.user);
 
     let navInfoArray = [
         { text: "Hotline: 0918.191.613", link: "#" },
@@ -57,20 +59,28 @@ const NavbarLoginComponent = () => {
                     </Badge>
                     <span style={{marginLeft: '4px'}}>Giỏ Hàng</span>
                 </WrapperHeaderLogin>
-                <WrapperHeaderLogin>
-                    {navButtonArray.map((navItem, index) => (
-                        <li key={index}>
-                            <a
-                                href="#"
-                                onClick={() => {
-                                    navigate(navItem.link);
-                                }}
-                            >
-                                {navItem.text}
-                            </a>
-                        </li>
-                    ))}
-                </WrapperHeaderLogin>
+                { user?.name ? (
+                    <WrapperHeaderLogin>
+                        <UserOutlined style={{fontSize: '30px', color: 'white', margin: '0, 8px'}}/>
+                        <div style={{color: 'white', cursor: 'pointer'}}>{user.name}</div>
+                    </WrapperHeaderLogin>
+                ) : (
+                    <WrapperHeaderLogin>
+                        {navButtonArray.map((navItem, index) => (
+                            <li key={index}>
+                                <a
+                                    href="#"
+                                    onClick={() => {
+                                        navigate(navItem.link);
+                                    }}
+                                >
+                                    {navItem.text}
+                                </a>
+                            </li>
+                        ))}
+                    </WrapperHeaderLogin>
+                )}
+                
             </WrapperHeaderContainerLogin>
         </div>
     )
