@@ -4,7 +4,7 @@ import { WrapperNavbarMenuContain, WrapperNavbarMenuContainer } from '../NavbarH
 
 const NavbarHeaderComponent = () => {
     let navArray = [
-        { text: "Giới thiệu", link: "/introduce" },
+        { text: "Trang chủ", link: "/" },
         { text: "Sản phẩm", link: "/products" },
         { text: "Khóa học online", link: "#" },
         { text: "Kho sách hướng thiện", link: "#" },

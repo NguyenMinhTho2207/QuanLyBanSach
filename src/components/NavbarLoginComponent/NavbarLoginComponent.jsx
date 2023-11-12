@@ -1,25 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { WrapperHeaderContainerLogin, WrapperHeaderLogin } from './style'
+import { WrapperContentPopup, WrapperHeaderContainerLogin, WrapperHeaderLogin, WrapperPopover } from './style'
 import { ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { Badge } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import * as UserService from '../../services/UserService'
+import { useDispatch } from 'react-redux'
+import { resetUser } from '../../redux/slice/userSlice'
+import Loading from '../LoadingComponent/Loading';
 
 const NavbarLoginComponent = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
     const user = useSelector((state) => state.user);
+    const [userName, setUserName] = useState('');
+    const [userAvatar, setUserAvatar] = useState('');
 
-    let navInfoArray = [
+    const navInfoArray = [
         { text: "Hotline: 0918.191.613", link: "#" },
         { text: "Địa chỉ: Số 2, đường 30, phường Tân Quy, quận 7, Tp.HCM", link: "#" },
     ];
 
-    let navButtonArray = [
+    const navButtonArray = [
         { text: "Đăng ký", link: "/sign-up" },
         { text: "Đăng nhập", link: "/sign-in" },
     ];
 
     const [isFixed, setIsFixed] = useState(false);
+
+    useEffect(() => {
+        setLoading(true);
+        setUserAvatar(user?.avatar);
+        setUserName(user?.name);
+        setLoading(false);
+    }, [user?.name])
+
+    const handleLogout = async () => {
+        setLoading(true);
+        await UserService.logoutUser();
+        dispatch(resetUser());
+        setLoading(false);
+        navigate("/");
+    }
+
+    const content = (
+        <div>
+          <WrapperContentPopup onClick={() => {navigate("/profile-user")}}>Thông tin người dùng</WrapperContentPopup>
+          <WrapperContentPopup onClick={handleLogout}>Đăng xuất</WrapperContentPopup>
+        </div>
+      );
 
     useEffect(() => {
         const handleScroll = () => {
@@ -59,27 +89,38 @@ const NavbarLoginComponent = () => {
                     </Badge>
                     <span style={{marginLeft: '4px'}}>Giỏ Hàng</span>
                 </WrapperHeaderLogin>
-                { user?.name ? (
-                    <WrapperHeaderLogin>
-                        <UserOutlined style={{fontSize: '30px', color: 'white', margin: '0, 8px'}}/>
-                        <div style={{color: 'white', cursor: 'pointer'}}>{user.name}</div>
-                    </WrapperHeaderLogin>
-                ) : (
-                    <WrapperHeaderLogin>
-                        {navButtonArray.map((navItem, index) => (
-                            <li key={index}>
-                                <a
-                                    href="#"
-                                    onClick={() => {
-                                        navigate(navItem.link);
-                                    }}
-                                >
-                                    {navItem.text}
-                                </a>
-                            </li>
-                        ))}
-                    </WrapperHeaderLogin>
-                )}
+                <Loading isLoading={loading}>
+                    { user?.access_token ? (
+                        <>
+                            <WrapperHeaderLogin>
+                                {userAvatar ? (
+                                    <img src={userAvatar} alt="avatar" style={{height: '40px', width: '40px', borderRadius: '50%', objectFit: 'cover', marginRight: '10px'}}/>
+                                ) : (
+                                    <UserOutlined style={{fontSize: '30px', color: 'white', margin: '0 10px'}}/>
+                                )}
+                                <WrapperPopover content={content} trigger="click">
+                                    <div style={{color: 'white', cursor: 'pointer'}}>{userName?.length ? userName : user?.email}</div>
+                                </WrapperPopover>
+                            </WrapperHeaderLogin>
+                            
+                        </>
+                    ) : (
+                        <WrapperHeaderLogin>
+                            {navButtonArray.map((navItem, index) => (
+                                <li key={index}>
+                                    <a
+                                        href="#"
+                                        onClick={() => {
+                                            navigate(navItem.link);
+                                        }}
+                                    >
+                                        {navItem.text}
+                                    </a>
+                                </li>
+                            ))}
+                        </WrapperHeaderLogin>
+                    )}
+                </Loading>
                 
             </WrapperHeaderContainerLogin>
         </div>

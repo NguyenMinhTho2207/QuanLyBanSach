@@ -29,7 +29,7 @@ const SignUpPage = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      message.success();
+      message.success('Đăng ký thành công');
       navigate('/sign-in');
     }
     else if (isError) {
@@ -55,7 +55,6 @@ const SignUpPage = () => {
       password, 
       confirmPassword
     })
-    console.log('mutation: ', mutation);
   }
 
   return (

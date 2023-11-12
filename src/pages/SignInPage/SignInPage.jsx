@@ -20,17 +20,19 @@ const SignInPage = () => {
   let [password, setPassword] = useState("");
   let dispatch = useDispatch();
   let navigate = useNavigate();
+  
   let mutation = useMutationHooks(
     data => UserService.loginUser(data)
-  )
+  );
 
   let { data, isPending, isSuccess } = mutation;
 
   useEffect(() => {
-    if (isSuccess) {
-      message.success();
+    if (data?.message === "Success") {
+      message.success("Đăng nhập thành công");
       navigate('/');
-      localStorage.setItem('access_token', data?.access_token);
+      localStorage.setItem('access_token', JSON.stringify(data?.access_token));
+      
       if (data?.access_token) {
         let decoded = jwtDecode(data?.access_token);
 
@@ -93,6 +95,7 @@ const SignInPage = () => {
                 placeholder='Mật khẩu' 
                 type={ isShowPassword ? 'text' : 'password'} 
                 value={password} 
+                autoComplete='off' 
                 onChange={handleOnChangePassword}
               >
               </InputForm>

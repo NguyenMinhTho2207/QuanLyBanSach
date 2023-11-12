@@ -1,4 +1,5 @@
 
+import { Popover } from "antd";
 import { styled } from "styled-components";
 
 export const WrapperHeaderContainerLogin = styled.div `
@@ -31,5 +32,20 @@ export const WrapperHeaderLogin = styled.ul `
             }
         }
         }
+    }
+`
+
+export const WrapperContentPopup = styled.p `
+    cursor: pointer;
+    padding: 8px;
+
+    &:hover {
+        color: #FB5431;
+    }
+`
+
+export const WrapperPopover = styled(Popover) `
+    & .ant-popover-arrow {
+        top: 1px !important;
     }
 `
