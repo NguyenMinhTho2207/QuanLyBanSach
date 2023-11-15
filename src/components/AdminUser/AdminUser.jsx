@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { WrapperHeader } from './style'
-import { Button, Form, Input, Modal } from 'antd'
+import { Button, Checkbox, Form, Input, Modal } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
+import InputComponent from '../InputComponent/InputComponent'
 
 const AdminUser = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,7 +30,7 @@ const AdminUser = () => {
             wrapperCol={{ span: 16 }}
             style={{ maxWidth: 600 }}
             initialValues={{ remember: true }}
-            onFinish={onFinish}
+            // onFinish={onFinish}
             autoComplete="off"
           >
             <Form.Item
