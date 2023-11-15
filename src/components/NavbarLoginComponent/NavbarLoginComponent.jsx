@@ -8,8 +8,9 @@ import * as UserService from '../../services/UserService'
 import { useDispatch } from 'react-redux'
 import { resetUser } from '../../redux/slice/userSlice'
 import Loading from '../LoadingComponent/Loading';
+import Logo from '../../assets/images/logo-no-background.png'
 
-const NavbarLoginComponent = () => {
+const NavbarLoginComponent = ({ isHiddenAddress = false, isHiddenCart = false }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
@@ -46,10 +47,13 @@ const NavbarLoginComponent = () => {
 
     const content = (
         <div>
-          <WrapperContentPopup onClick={() => {navigate("/profile-user")}}>Thông tin người dùng</WrapperContentPopup>
-          <WrapperContentPopup onClick={handleLogout}>Đăng xuất</WrapperContentPopup>
+            {user?.is_admin && (
+                <WrapperContentPopup onClick={() => {navigate("/system/admin")}}>Quản lý hệ thống</WrapperContentPopup>
+            )}
+            <WrapperContentPopup onClick={() => {navigate("/profile-user")}}>Thông tin người dùng</WrapperContentPopup>
+            <WrapperContentPopup onClick={handleLogout}>Đăng xuất</WrapperContentPopup>
         </div>
-      );
+    );
 
     useEffect(() => {
         const handleScroll = () => {
@@ -69,26 +73,33 @@ const NavbarLoginComponent = () => {
     return (
         <div style={{ position: isFixed ? 'fixed' : 'static', top: 0, left: 0, right: 0, zIndex: 999 }}>
             <WrapperHeaderContainerLogin>
-                <WrapperHeaderLogin>
-                    {navInfoArray.map((navItem, index) => (
-                        <li key={index}>
-                            <a
-                                href="#"
-                                onClick={() => {
-                                    navigate(navItem.link);
-                                }}
-                            >
-                                {navItem.text}
-                            </a>
-                        </li>
-                    ))}
-                </WrapperHeaderLogin>
-                <WrapperHeaderLogin style={{cursor: 'pointer', color: '#fff'}}>
-                    <Badge count={4} size='small' style={{top: '5px', right: '5px'}}>
-                        <ShoppingCartOutlined style={{color: '#fff', fontSize: '30px'}}/>
-                    </Badge>
-                    <span style={{marginLeft: '4px'}}>Giỏ Hàng</span>
-                </WrapperHeaderLogin>
+                {!isHiddenAddress ? (
+                    <WrapperHeaderLogin>
+                        {navInfoArray.map((navItem, index) => (
+                            <li key={index}>
+                                <a
+                                    href="#"
+                                    onClick={() => {
+                                        navigate(navItem.link);
+                                    }}
+                                >
+                                    {navItem.text}
+                                </a>
+                            </li>
+                        ))}
+                    </WrapperHeaderLogin>
+                ) : (
+                    <img src={Logo} style={{cursor: 'pointer', height: '45px'}} alt="logo" onClick={() => {navigate("/")}}/>
+                )}
+
+                {!isHiddenCart && (
+                    <WrapperHeaderLogin style={{cursor: 'pointer', color: '#fff'}}>
+                        <Badge count={4} size='small' style={{top: '5px', right: '5px'}}>
+                            <ShoppingCartOutlined style={{color: '#fff', fontSize: '30px'}}/>
+                        </Badge>
+                        <span style={{marginLeft: '4px'}}>Giỏ Hàng</span>
+                    </WrapperHeaderLogin>
+                )}
                 <Loading isLoading={loading}>
                     { user?.access_token ? (
                         <>

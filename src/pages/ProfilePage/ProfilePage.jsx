@@ -10,7 +10,7 @@ import Loading from '../../components/LoadingComponent/Loading'
 import * as message from '../../components/Message/Message'
 import { updateUser } from '../../redux/slice/userSlice'
 import { UploadOutlined } from '@ant-design/icons'
-import { Button, Upload } from 'antd'
+import { Button } from 'antd'
 import { getBase64 } from '../../utils'
 import { useNavigate } from 'react-router-dom'
 
@@ -128,7 +128,7 @@ const ProfilePage = () => {
                 <Button icon={<UploadOutlined />}>Select File</Button>
               </WrapperUploadFile>
               {avatar && (
-                <img src={avatar} style={{height: '100px', width: '100px', borderRadius: '50%', objectFit: 'cover'}} atl='avatar'/>
+                <img src={avatar} style={{height: '100px', width: '100px', borderRadius: '50%', objectFit: 'cover'}} alt='avatar'/>
               )}
             </WrapperInput>
             {/* Email */}
