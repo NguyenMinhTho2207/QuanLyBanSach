@@ -28,7 +28,7 @@ const SignUpPage = () => {
   let { data, isPending, isSuccess, isError } = mutation;
 
   useEffect(() => {
-    if (isSuccess) {
+    if (data?.message === "Success") {
       message.success('Đăng ký thành công');
       navigate('/sign-in');
     }
