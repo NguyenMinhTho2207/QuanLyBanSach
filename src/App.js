@@ -28,12 +28,12 @@ function App() {
     let storageData = localStorage.getItem('access_token'); // Use let instead of const
     let decoded = {};
 
-  if (storageData && isJsonString(storageData)) {
-    storageData = JSON.parse(storageData);
-    decoded = jwtDecode(storageData);
-  }
+    if (storageData && isJsonString(storageData)) {
+      storageData = JSON.parse(storageData);
+      decoded = jwtDecode(storageData);
+    }
 
-  return { decoded, storageData };
+    return { decoded, storageData };
   };
 
   // Add a request interceptor

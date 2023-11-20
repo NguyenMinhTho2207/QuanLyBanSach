@@ -40,7 +40,7 @@ export const WrapperUploadFile = styled(Upload) `
         border-radius: 50%;
     }
 
-    & .ant-upload-list ant-upload-list-text {
+    & .ant-upload-list {
         display: none;
     }
 `

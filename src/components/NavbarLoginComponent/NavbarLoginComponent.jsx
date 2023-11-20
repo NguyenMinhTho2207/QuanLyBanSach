@@ -40,6 +40,7 @@ const NavbarLoginComponent = ({ isHiddenAddress = false, isHiddenCart = false })
     const handleLogout = async () => {
         setLoading(true);
         await UserService.logoutUser();
+        localStorage.removeItem('access_token');
         dispatch(resetUser());
         setLoading(false);
         navigate("/");

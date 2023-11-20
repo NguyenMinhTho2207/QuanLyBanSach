@@ -16,7 +16,6 @@ import { useNavigate } from 'react-router-dom'
 
 const ProfilePage = () => {
   const user = useSelector((state) => state.user);
-  console.log("user: ", user);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone_number, setPhoneNumber] = useState("");
@@ -32,7 +31,7 @@ const ProfilePage = () => {
     }
   );
 
-  const { data, isSuccess, isError, isPending } = mutation;
+  const { isSuccess, isError, isPending } = mutation;
 
   useEffect(() => {
     setName(user?.name);
@@ -75,7 +74,6 @@ const ProfilePage = () => {
 
   const handleOnChangeAvatar = async ({fileList}) => {
     const file = fileList[0];
-    console.log(file);
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
