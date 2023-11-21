@@ -1,5 +1,5 @@
 import { Menu } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { getItem } from '../../utils';
 import { UserOutlined, AppstoreOutlined, DropboxOutlined } from '@ant-design/icons'
 import NavbarLoginComponent from '../../components/NavbarLoginComponent/NavbarLoginComponent';
@@ -14,7 +14,6 @@ export const AdminPage = () => {
     getItem('Sản phẩm', 'product', <DropboxOutlined />),
 
     getItem('Danh mục', 'category', <AppstoreOutlined />),
-
   ];
 
   const [keySelected, setKeySelected] = useState('');
