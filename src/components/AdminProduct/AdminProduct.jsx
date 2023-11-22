@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { WrapperHeader } from './style'
-import { Button, Form, Modal, Select } from 'antd'
+import { Button, Form, Select } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
 import InputComponent from '../InputComponent/InputComponent'
@@ -14,13 +14,15 @@ import * as message from '../../components/Message/Message'
 import { useQuery } from '@tanstack/react-query'
 import DrawerComponent from '../DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
+import ModalComponent from '../ModalComponent/ModalComponent'
 
 const AdminProduct = () => {
-  const [madalform] = Form.useForm();
+  const [modalForm] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState();
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const user = useSelector((state) => state?.user);
 
   const [stateProducts, setStateProducts] = useState({
@@ -86,6 +88,16 @@ const AdminProduct = () => {
     }
   );
 
+  const mutationDeleted = useMutationHooks(
+    (data) => { 
+      const { id, token } = data;
+
+      const res = ProductService.deleteProduct(id, token);
+
+      return res;
+    }
+  );
+
   const { Option } = Select;
   const fetchCategoryAll = async () => {
     const resCatetogry = await CategoryService.getAllCategory();
@@ -94,6 +106,7 @@ const AdminProduct = () => {
   
   const { data, isSuccess, isError, isPending } = mutation;
   const { data: dataUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated, isPending: isLoadingUpdated } = mutationUpdate;
+  const { data: dataDeleted, isSuccess: isSuccessDeleted, isError: isErrorDeleted, isPending: isLoadingDeleted } = mutationDeleted;
 
   const { isLoading, data: categories } = useQuery({
     queryKey: ['categories'],
@@ -135,6 +148,16 @@ const AdminProduct = () => {
       message.error("Có gì đó sai sai");
     }
   }, [isSuccessUpdated])
+
+  useEffect(() => {
+    if(isSuccessDeleted && dataDeleted?.message === 'Delete product success') {
+      message.success("Xóa sản phẩm thành công");
+      handleCancelDelete();
+    }
+    else if (isErrorDeleted) {
+      message.error("Có gì đó sai sai");
+    }
+  }, [isSuccessDeleted])
 
   const fetchGetDetailsProduct = async (rowSelected) => {
     const resProductsDetails = await ProductService.getDetailsProduct(rowSelected);
@@ -178,18 +201,27 @@ const AdminProduct = () => {
   }, [rowSelected])
   
   const handleDetailsProduct = () => {
-    if (rowSelected) {
-      setIsLoadingUpdate(true);
-      fetchGetDetailsProduct(rowSelected);
-    }
-
     setIsOpenDrawer(true);
+  }
+
+  const handleDeleteProduct = () => {
+    mutationDeleted.mutate(
+      {
+        id: rowSelected, 
+        token: user?.access_token
+      },
+      {
+        onSettled: () => {
+          queryProduct.refetch();
+        }
+      }
+    )
   }
 
   const renderAction = () => {
     return (
       <div>
-        <DeleteOutlined style={{color: 'red', fontSize: '30px', cursor: 'pointer'}}/>
+        <DeleteOutlined style={{color: 'red', fontSize: '30px', cursor: 'pointer'}} onClick={() => setIsModalOpenDelete(true)}/>
         <EditOutlined style={{color: 'orange', fontSize: '30px', cursor: 'pointer'}} onClick={handleDetailsProduct}/>
       </div>
     )
@@ -245,8 +277,12 @@ const AdminProduct = () => {
       image: ''
     });
 
-    madalform.resetFields();
+    modalForm.resetFields();
   };
+
+  const handleCancelDelete = () => {
+    setIsModalOpenDelete(false);
+  }
 
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
@@ -354,7 +390,7 @@ const AdminProduct = () => {
             }}
           ></TableComponent>
         </div>
-        <Modal title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+        <ModalComponent title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
           <Loading isLoading={isPending}>
             <Form
               name="modalForm"
@@ -364,7 +400,7 @@ const AdminProduct = () => {
               initialValues={{ remember: true }}
               onFinish={onFinish}
               autoComplete="on"
-              form={madalform}
+              form={modalForm}
             >
               <Form.Item
                 label="Tên sản phẩm"
@@ -460,7 +496,7 @@ const AdminProduct = () => {
               </Form.Item>
             </Form>
           </Loading>
-        </Modal>
+        </ModalComponent>
         <DrawerComponent title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
           <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
             <Form
@@ -568,6 +604,11 @@ const AdminProduct = () => {
             </Form>
           </Loading>
         </DrawerComponent>
+        <ModalComponent title="Xóa sản phẩm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+          <Loading isLoading={isLoadingDeleted}>
+            <div>Bạn có muốn xóa sản phẩm này không?</div>
+          </Loading>
+        </ModalComponent>
     </div>
   )
 }

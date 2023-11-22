@@ -24,3 +24,12 @@ export let updateProduct = async (id, access_token, data) => {
     });
     return res.data;
 }
+
+export let deleteProduct = async (id, access_token) => {
+    let res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/product/delete-product/${id}`, {
+        headers: {
+            authorization: `Bearer ${access_token}`,
+        }
+    });
+    return res.data;
+}
