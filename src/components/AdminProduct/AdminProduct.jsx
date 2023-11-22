@@ -80,7 +80,7 @@ const AdminProduct = () => {
     (data) => { 
       const { id, token, ...rests } = data;
 
-      const resProduct = ProductService.updateProduct(id, token, rests.stateProductsDetails);
+      const resProduct = ProductService.updateProduct(id, token, { ...rests });
 
       return resProduct;
     }
@@ -107,12 +107,14 @@ const AdminProduct = () => {
     return resAllProduct;
   }
 
-  const { isLoading: isLoadingProduct, data: products } = useQuery({
+  const queryProduct = useQuery({
     queryKey: ['products'],
     queryFn: getAllProducts,
     retry: 3,
     retryDelay: 1000,
   });
+
+  const { isLoading: isLoadingProduct, data: products } = queryProduct;
 
   useEffect(() => {
     if(isSuccess && data?.message === 'Success') {
@@ -264,7 +266,11 @@ const AdminProduct = () => {
   };
 
   const onFinish = () => {
-    mutation.mutate(stateProducts);
+    mutation.mutate(stateProducts, {
+      onSettled: () => {
+        queryProduct.refetch();
+      }
+    });
   }
 
   const handleOnChange = (e) => {
@@ -315,7 +321,18 @@ const AdminProduct = () => {
   };
 
   const onUpdateProduct = () => {
-    mutationUpdate.mutate({id: rowSelected, token: user?.access_token, stateProductsDetails})
+    mutationUpdate.mutate(
+      {
+        id: rowSelected, 
+        token: user?.access_token, 
+        ...stateProductsDetails
+      }, 
+      {
+        onSettled: () => {
+          queryProduct.refetch();
+        }
+      }
+    )
   }
 
   return (
@@ -445,7 +462,7 @@ const AdminProduct = () => {
           </Loading>
         </Modal>
         <DrawerComponent title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
-          <Loading isLoading={isLoadingUpdate}>
+          <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
             <Form
               name="drawerForm"
               labelCol={{ span: 8 }}
