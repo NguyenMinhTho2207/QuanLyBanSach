@@ -178,7 +178,9 @@ const AdminProduct = () => {
 
     setIsLoadingUpdate(false);
   }
+
   const [drawerForm] = Form.useForm();
+  
   useEffect(() => {
     const formValues = {
       product_name: stateProductsDetails.product_name,
@@ -228,6 +230,11 @@ const AdminProduct = () => {
   }
   
   const columns = [
+    {
+      title: 'Hình ảnh sản phẩm',
+      dataIndex: 'image',
+      render: (text) => <img src={text} style={{height: '100px',  width: '100px', borderRadius: '50%', objectFit: 'cover'}} alt='avatar'/>,
+    },
     {
       title: 'Tên sản phẩm',
       dataIndex: 'product_name',
@@ -286,19 +293,19 @@ const AdminProduct = () => {
 
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
-    setStateProductsDetails({
-      product_name: '',
-      category_id: '',
-      category_name: '',
-      quantity: '',
-      price: '',
-      rating: '',
-      description: '',
-      discount: '',
-      image: ''
-    });
+    // setStateProductsDetails({
+    //   product_name: '',
+    //   category_id: '',
+    //   category_name: '',
+    //   quantity: '',
+    //   price: '',
+    //   rating: '',
+    //   description: '',
+    //   discount: '',
+    //   image: ''
+    // });
 
-    drawerForm.resetFields();
+    // drawerForm.resetFields();
   };
 
   const onFinish = () => {
@@ -355,6 +362,15 @@ const AdminProduct = () => {
       e.preventDefault();
     }
   };
+
+  // const handleKeyPress = (e) => {
+  //   // Cho phép các phím số, phím mũi tên lên, xuống, và phím xóa
+  //   const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'ArrowUp', 'ArrowDown', 'Backspace'];
+
+  //   if (!allowedKeys.includes(e.key)) {
+  //       e.preventDefault();
+  //   }
+  // };
 
   const onUpdateProduct = () => {
     mutationUpdate.mutate(
@@ -593,12 +609,12 @@ const AdminProduct = () => {
                 <WrapperUploadFile onChange={handleOnChangeAvatarDetails} maxCount={1}>
                   <Button>Select File</Button>
                   {stateProductsDetails?.image && (
-                    <img src={stateProductsDetails?.image} style={{height: '250px',  width: '250px', borderRadius: '50%', objectFit: 'cover'}} alt='avatar'/>
+                    <img src={stateProductsDetails?.image} style={{height: '250px',  width: '250px', borderRadius: '50%', objectFit: 'cover'}} alt='image'/>
                   )}
                 </WrapperUploadFile>
               </Form.Item>
 
-              <Form.Item wrapperCol={{ offset: 18, span: 16 }}>
+              <Form.Item wrapperCol={{ offset: 14, span: 24 }}>
                 <Button type="primary" htmlType="submit">Cập nhật sản phẩm</Button>
               </Form.Item>
             </Form>
