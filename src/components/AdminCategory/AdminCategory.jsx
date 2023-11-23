@@ -12,6 +12,7 @@ import ModalComponent from '../ModalComponent/ModalComponent'
 import { useSelector } from 'react-redux'
 import { useQuery } from '@tanstack/react-query'
 import DrawerComponent from '../DrawerComponent/DrawerComponent'
+import moment from 'moment/moment'
 
 const AdminCategory = () => {
     const [modalForm] = Form.useForm();
@@ -199,15 +200,19 @@ const AdminCategory = () => {
         {
           title: 'Danh mục',
           dataIndex: 'category_name',
-          render: (text) => <a>{text}</a>,
+          sorter: (a, b) => a.category_name.localeCompare(b.category_name)
         },
         {
           title: 'Thời gian tạo',
           dataIndex: 'createdAt',
+          sorter: (a, b) => a.createdAt - b.createdAt,
+          render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
           title: 'Thời gian cập nhật',
           dataIndex: 'updatedAt',
+          sorter: (a, b) => a.createdAt - b.createdAt,
+          render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
           title: 'Action',
@@ -219,7 +224,9 @@ const AdminCategory = () => {
     const dataTable = categories?.data.map((category) => {
         return {
             ...category, 
-            key: category.category_id
+            key: category.category_id,
+            createdAt: new Date(category.createdAt),
+            updatedAt: new Date(category.updatedAt),
         }
     });
 

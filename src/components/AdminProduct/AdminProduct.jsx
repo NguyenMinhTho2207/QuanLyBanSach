@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { WrapperHeader } from './style'
-import { Button, Form, Select } from 'antd'
-import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { Button, Form, Select, Space } from 'antd'
+import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
 import InputComponent from '../InputComponent/InputComponent'
 import { WrapperUploadFile } from '../../pages/ProfilePage/style'
@@ -24,6 +24,7 @@ const AdminProduct = () => {
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const user = useSelector((state) => state?.user);
+  const searchInput = useRef(null);
 
   const [stateProducts, setStateProducts] = useState({
     product_name: '',
@@ -228,33 +229,177 @@ const AdminProduct = () => {
       </div>
     )
   }
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+  };
+
+  const getColumnSearchProps = (dataIndex, placeholder) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <InputComponent
+          ref={searchInput}
+          placeholder={`Tìm kiếm ${placeholder}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1677ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    // render: (text) =>
+    //   searchedColumn === dataIndex ? (
+    //     <Highlighter
+    //       highlightStyle={{
+    //         backgroundColor: '#ffc069',
+    //         padding: 0,
+    //       }}
+    //       searchWords={[searchText]}
+    //       autoEscape
+    //       textToHighlight={text ? text.toString() : ''}
+    //     />
+    //   ) : (
+    //     text
+    //   ),
+  });
   
   const columns = [
     {
       title: 'Hình ảnh sản phẩm',
       dataIndex: 'image',
-      render: (text) => <img src={text} style={{height: '100px',  width: '100px', borderRadius: '50%', objectFit: 'cover'}} alt='avatar'/>,
+      render: (text) => <img src={text} style={{height: '90px',  width: '90px', borderRadius: '50%', objectFit: 'cover'}} alt='avatar'/>
     },
     {
       title: 'Tên sản phẩm',
       dataIndex: 'product_name',
-      render: (text) => <a>{text}</a>,
+      sorter: (a, b) => a.product_name.localeCompare(b.product_name),
+      ...getColumnSearchProps('product_name', 'tên sản phẩm')
     },
     {
       title: 'Danh mục',
       dataIndex: 'category_name',
+      sorter: (a, b) => a.product_name.localeCompare(b.product_name),
+      ...getColumnSearchProps('category_name', 'danh mục sản phẩm')
     },
     {
       title: 'Giá',
       dataIndex: 'price',
+      sorter: (a, b) => a.price - b.price,
+      filters: [
+        {
+          text: '<= 500,000',
+          value: '<=',
+        },
+        {
+          text: '>= 500,000',
+          value: '>=',
+        },
+      ],
+      onFilter: (value, record) => {
+        if (value === '<=') {
+          return record.price <= 500000
+        }
+        else if (value === '>=') {
+          return record.price >= 500000
+        }
+      },
+      render: (text) => (
+        <span>{Number(text).toLocaleString('vi-VN')} VNĐ</span>
+      )
     },
     {
       title: 'Đánh giá',
       dataIndex: 'rating',
+      sorter: (a, b) => a.rating - b.rating,
+      filters: [
+        {
+          text: '<= 3',
+          value: '<=',
+        },
+        {
+          text: '>= 3',
+          value: '>=',
+        },
+      ],
+      onFilter: (value, record) => {
+        if (value === '<=') {
+          return record.rating <= 3
+        }
+        else if (value === '>=') {
+          return record.rating >= 3
+        }
+      },
     },
     {
       title: 'Số lượng trong kho',
       dataIndex: 'quantity',
+      sorter: (a, b) => a.quantity - b.quantity,
+      filters: [
+        {
+          text: '<= 10',
+          value: '<=',
+        },
+        {
+          text: '>= 10',
+          value: '>=',
+        },
+      ],
+      onFilter: (value, record) => {
+        if (value === '<=') {
+          return record.quantity <= 10
+        }
+        else if (value === '>=') {
+          return record.quantity >= 10
+        }
+      },
     },
     {
       title: 'Action',
@@ -266,7 +411,9 @@ const AdminProduct = () => {
   const dataTable = products?.data.map((product) => {
     return {
       ...product, 
-      key: product.product_id
+      key: product.product_id,
+      createdAt: new Date(product.createdAt),
+      updatedAt: new Date(product.updatedAt),
     }
   });
   
@@ -355,22 +502,13 @@ const AdminProduct = () => {
   }
 
   const handleKeyPress = (e) => {
-    const charCode = e.which ? e.which : e.keyCode;
-  
     // Cho phép các phím số, phím mũi tên lên, xuống, và phím xóa
-    if ((charCode < 48 || charCode > 57) && charCode !== 8 && charCode !== 38 && charCode !== 40) {
-      e.preventDefault();
+    const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'ArrowUp', 'ArrowDown', 'Backspace'];
+
+    if (!allowedKeys.includes(e.key)) {
+        e.preventDefault();
     }
   };
-
-  // const handleKeyPress = (e) => {
-  //   // Cho phép các phím số, phím mũi tên lên, xuống, và phím xóa
-  //   const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'ArrowUp', 'ArrowDown', 'Backspace'];
-
-  //   if (!allowedKeys.includes(e.key)) {
-  //       e.preventDefault();
-  //   }
-  // };
 
   const onUpdateProduct = () => {
     mutationUpdate.mutate(
@@ -391,7 +529,7 @@ const AdminProduct = () => {
     <div>
         <WrapperHeader>Quản lý sản phẩm</WrapperHeader>
         <div style={{ marginTop: '10px'}}>
-          <Button style={{ height: '150px', width: '150px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '60px' }}/></Button>
+          <Button style={{ height: '100px', width: '100px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '60px' }}/></Button>
         </div>
         <div style={{ marginTop: '20px' }}>
           <TableComponent columns={columns} data={dataTable} isLoading={isLoadingProduct} 
@@ -406,7 +544,7 @@ const AdminProduct = () => {
             }}
           ></TableComponent>
         </div>
-        <ModalComponent title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+        <ModalComponent forceRender title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
           <Loading isLoading={isPending}>
             <Form
               name="modalForm"
@@ -459,7 +597,7 @@ const AdminProduct = () => {
                 name="quantity"
                 rules={[{ required: true, message: 'Vui lòng nhập số lượng trong kho!' }]}
               >
-                <InputComponent type="number" value={ stateProducts.quantity } onChange={handleOnChange} name="quantity" onKeyDown={handleKeyPress}/>
+                <InputComponent type="number" value={ stateProducts.quantity } onChange={handleOnChange} name="quantity" min="1" onKeyDown={handleKeyPress}/>
               </Form.Item>
 
               <Form.Item
@@ -467,7 +605,7 @@ const AdminProduct = () => {
                 name="price"
                 rules={[{ required: true, message: 'Vui lòng nhập giá sản phẩm!' }]}
               >
-                <InputComponent type="number" value={ stateProducts.price } onChange={handleOnChange} name="price"/>
+                <InputComponent type="number" value={ stateProducts.price } onChange={handleOnChange} name="price" min="1"/>
               </Form.Item>
 
               <Form.Item
@@ -475,7 +613,7 @@ const AdminProduct = () => {
                 name="rating"
                 rules={[{ required: true, message: 'Vui lòng nhập điểm đánh giá sản phẩm!' }]}
               >
-                <InputComponent type="number" value={ stateProducts.rating } onChange={handleOnChange} name="rating"/>
+                <InputComponent type="number" value={ stateProducts.rating } onChange={handleOnChange} name="rating" min="1" max="5"/>
               </Form.Item>
 
               <Form.Item
@@ -513,7 +651,7 @@ const AdminProduct = () => {
             </Form>
           </Loading>
         </ModalComponent>
-        <DrawerComponent title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
+        <DrawerComponent forceRender title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
           <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
             <Form
               name="drawerForm"
