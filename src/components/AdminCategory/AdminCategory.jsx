@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { WrapperHeader } from './style'
-import { Button, Form, Modal } from 'antd'
-import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { Button, Form, Space } from 'antd'
+import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
 import InputComponent from '../InputComponent/InputComponent'
 import * as CategoryService from '../../services/CategoryService'
@@ -22,6 +22,7 @@ const AdminCategory = () => {
     const [isOpenDrawer, setIsOpenDrawer] = useState(false);
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+    const searchInput = useRef(null);
 
     const user = useSelector((state) => state?.user);
 
@@ -196,11 +197,79 @@ const AdminCategory = () => {
         )
     }
 
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+      };
+    
+      const handleReset = (clearFilters) => {
+        clearFilters();
+      };
+    
+      const getColumnSearchProps = (dataIndex, placeholder) => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+          <div
+            style={{
+              padding: 8,
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            <InputComponent
+              ref={searchInput}
+              placeholder={`Tìm kiếm ${placeholder}`}
+              value={selectedKeys[0]}
+              onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+              onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              style={{
+                marginBottom: 8,
+                display: 'block',
+              }}
+            />
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                icon={<SearchOutlined />}
+                size="small"
+                style={{
+                  width: 90,
+                }}
+              >
+                Search
+              </Button>
+              <Button
+                onClick={() => clearFilters && handleReset(clearFilters)}
+                size="small"
+                style={{
+                  width: 90,
+                }}
+              >
+                Reset
+              </Button>
+            </Space>
+          </div>
+        ),
+        filterIcon: (filtered) => (
+          <SearchOutlined
+            style={{
+              color: filtered ? '#1677ff' : undefined,
+            }}
+          />
+        ),
+        onFilter: (value, record) =>
+          record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownOpenChange: (visible) => {
+          if (visible) {
+            setTimeout(() => searchInput.current?.select(), 100);
+          }
+        },
+    });
+
     const columns = [
         {
           title: 'Danh mục',
           dataIndex: 'category_name',
-          sorter: (a, b) => a.category_name.localeCompare(b.category_name)
+          sorter: (a, b) => a.category_name.localeCompare(b.category_name),
+          ...getColumnSearchProps('category_name', 'danh mục sản phẩm')
         },
         {
           title: 'Thời gian tạo',
@@ -259,7 +328,7 @@ const AdminCategory = () => {
         <div>
             <WrapperHeader>Quản lý danh mục sản phẩm</WrapperHeader>
                 <div style={{ marginTop: '10px'}}>
-                    <Button style={{ height: '150px', width: '150px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '60px' }}/></Button>
+                    <Button style={{ height: '100px', width: '100px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '60px' }}/></Button>
                 </div>
                 <div style={{ marginTop: '20px' }}>
                 <TableComponent columns={columns} data={dataTable} isLoading={isLoadingCategory} 
