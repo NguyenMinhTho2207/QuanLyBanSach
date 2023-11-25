@@ -293,7 +293,7 @@ const AdminCategory = () => {
     const dataTable = categories?.data.map((category) => {
         return {
             ...category, 
-            key: category.category_id,
+            key: category.id,
             createdAt: new Date(category.createdAt),
             updatedAt: new Date(category.updatedAt),
         }
@@ -343,7 +343,7 @@ const AdminCategory = () => {
                     }}
                 ></TableComponent>
                 </div>
-            <ModalComponent title="Tạo danh mục sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Tạo danh mục sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isPending}>
                     <Form
                         name="modalForm"
@@ -369,7 +369,7 @@ const AdminCategory = () => {
                     </Form>
                 </Loading>
             </ModalComponent>
-            <DrawerComponent title='Chi tiết danh mục sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
+            <DrawerComponent forceRender title='Chi tiết danh mục sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
                     <Form
                         name="drawerForm"

@@ -20,7 +20,6 @@ const TableComponent = (props) => {
   return (
     <Loading isLoading={isLoading}>
       <Table
-        rowKey={(record) => record.id}
         rowSelection={{
           type: selectionType,
           ...rowSelection,

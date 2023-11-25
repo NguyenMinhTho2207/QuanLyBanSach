@@ -2,7 +2,6 @@ import React from 'react'
 import { StyleNameProduct, WrapperCardStyle, WrapperImageStyle, WrapperPriceDiscountText, WrapperPriceText, WrapperReportText, WrapperStyleTextSell } from './style'
 import { StarFilled } from '@ant-design/icons';
 import logo from '../../assets/images/chinhhang.png'
-import product1 from '../../assets/images/products/bfdb22e1a3d97b8722c8-1.jpg'
 
 const CardComponent = (props) => {
     const { quantity, description, image, productName, price, rating, categoryId, discount, soldQuantity } = props;
@@ -13,7 +12,7 @@ const CardComponent = (props) => {
             headStyle={{width: '200px', height: '200px'}}
             style={{ width: 200 }}
             bodyStyle={{ padding: '10px'}}
-            cover={<img alt="example" src={product1} />}
+            cover={<img alt="example" src={image} />}
         >
             <WrapperImageStyle src={logo} alt='chinhhang'/>
             <StyleNameProduct>{productName}</StyleNameProduct>

@@ -397,7 +397,7 @@ const AdminProduct = () => {
   const dataTable = products?.data.map((product) => {
     return {
       ...product, 
-      key: product.product_id,
+      key: product.id,
       createdAt: new Date(product.createdAt),
       updatedAt: new Date(product.updatedAt),
     }
