@@ -15,393 +15,432 @@ import DrawerComponent from '../DrawerComponent/DrawerComponent'
 import moment from 'moment/moment'
 
 const AdminCategory = () => {
-    const [modalForm] = Form.useForm();
-    const [drawerForm] = Form.useForm();
-    const [rowSelected, setRowSelected] = useState();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
-    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
-    const searchInput = useRef(null);
+  const [modalForm] = Form.useForm();
+  const [drawerForm] = Form.useForm();
+  const [rowSelected, setRowSelected] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const searchInput = useRef(null);
 
-    const user = useSelector((state) => state?.user);
+  const user = useSelector((state) => state?.user);
 
-    const [stateCategory, setStateCategory] = useState({
-        category_name: ''
-    });
+  const [stateCategory, setStateCategory] = useState({
+    category_name: ''
+  });
 
-    const [stateCategoriesDetails, setStateCategoriesDetails] = useState({
-        category_name: ''
-    });
+  const [stateCategoriesDetails, setStateCategoriesDetails] = useState({
+    category_name: ''
+  });
 
-    const mutation = useMutationHooks(
-        (data) => { 
-            const { category_name } = data;
-            const res = CategoryService.createCategory( {category_name} );
-            return res;
-        }
-    );
-
-    const mutationUpdate = useMutationHooks(
-        (data) => { 
-            const { id, token, ...rests } = data;
-        
-            const resCategory = CategoryService.updateCategory(id, token, { ...rests });
-        
-            return resCategory;
-        }
-    );
-
-    const mutationDeleted = useMutationHooks(
-        (data) => { 
-            const { id, token } = data;
-        
-            const res = CategoryService.deleteCategory(id, token);
-        
-            return res;
-        }
-    );
-
-    const { data, isSuccess, isError, isPending } = mutation;
-    const { data: dataUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated, isPending: isLoadingUpdated } = mutationUpdate;
-    const { data: dataDeleted, isSuccess: isSuccessDeleted, isError: isErrorDeleted, isPending: isLoadingDeleted } = mutationDeleted;
-    
-    const fetchGetDetailsCategory = async (rowSelected) => {
-        const resCategoriesDetails = await CategoryService.getDetailsCategory(rowSelected);
-    
-        if (resCategoriesDetails?.data) {
-            setStateCategoriesDetails({
-                category_name: resCategoriesDetails?.data.category_name
-            })
-        }
-    
-        setIsLoadingUpdate(false);
+  const mutation = useMutationHooks(
+    (data) => { 
+      const { category_name } = data;
+      const res = CategoryService.createCategory( {category_name} );
+      return res;
     }
+  );
 
-    useEffect(() => {
-        const formValues = {
-          category_name: stateCategoriesDetails.category_name,
-        };
-    
-        drawerForm.setFieldsValue(formValues);
-    }, [stateCategoriesDetails, drawerForm]);
-
-    useEffect(() => {
-        if (rowSelected) {
-            fetchGetDetailsCategory(rowSelected);
-        }
-    }, [rowSelected])
-
-    const getAllCategories = async () => {
-        const resAllCategory = await CategoryService.getAllCategory();
-        return resAllCategory;
+  const mutationUpdate = useMutationHooks(
+    (data) => { 
+      const { id, token, ...rests } = data;
+  
+      const resCategory = CategoryService.updateCategory(id, token, { ...rests });
+  
+      return resCategory;
     }
-    
-    const queryCategory = useQuery({
-        queryKey: ['categories'],
-        queryFn: getAllCategories,
-        retry: 3,
-        retryDelay: 1000,
-    });
-    
-    const { isLoading: isLoadingCategory, data: categories } = queryCategory;
+  );
 
-    useEffect(() => {
-        if(isSuccess && data?.message === 'Success') {
-            message.success("Tạo dạnh mục sản phẩm thành công");
-            handleCancel();
-        }
-        else if (isError) {
-            message.error("Có gì đó sai sai");
-        }
-    }, [isSuccess])
+  const mutationDeleted = useMutationHooks(
+    (data) => { 
+      const { id, token } = data;
+  
+      const res = CategoryService.deleteCategory(id, token);
+  
+      return res;
+    }
+  );
 
-    useEffect(() => {
-        if(isSuccessUpdated && dataUpdated?.message === 'Success') {
-          message.success("Cập nhật danh mục sản phẩm thành công");
-          handleCloseDrawer();
-        }
-        else if (isErrorUpdated) {
-          message.error("Có gì đó sai sai");
-        }
-      }, [isSuccessUpdated])
-    
-    useEffect(() => {
-        if(isSuccessDeleted && dataDeleted?.message === 'Delete category success') {
-          message.success("Xóa danh mục sản phẩm thành công");
-          handleCancelDelete();
-        }
-        else if (isErrorDeleted) {
-          message.error("Có gì đó sai sai");
-        }
-    }, [isSuccessDeleted])
-    
-    const handleCancel = () => {
-        setIsModalOpen(false);
-        setStateCategory({
-            category_name: ''
-        });
+  const mutationDeletedMultiple = useMutationHooks(
+    (data) => { 
+      const { token, ids } = data;
+      const res = CategoryService.deleteMultipleCategories(ids, token);
 
-        modalForm.resetFields();
-    };
+      return res;
+    }
+  );
 
-    const handleCloseDrawer = () => {
-        setIsOpenDrawer(false);
-        // setStateCategoriesDetails({
-        //   category_name: ''
-        // });
-    
-        // drawerForm.resetFields();
-      };
+  const handleDeleteMultipleCategories = (ids) => {
+    mutationDeletedMultiple.mutate(
+      {
+        ids: ids, 
+        token: user?.access_token
+      },
+      {
+        onSettled: () => {
+          queryCategory.refetch();
+        }
+      }
+    )
+  }
 
-    const onFinish = () => {
-        mutation.mutate(stateCategory, {
-            onSettled: () => {
-                queryCategory.refetch();
-            }
+  const { data, isSuccess, isError, isPending } = mutation;
+  const { data: dataUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated, isPending: isLoadingUpdated } = mutationUpdate;
+  const { data: dataDeleted, isSuccess: isSuccessDeleted, isError: isErrorDeleted, isPending: isLoadingDeleted } = mutationDeleted;
+  const { data: dataDeletedMultiple, isSuccess: isSuccessDeletedMultiple, isError: isErrorDeletedMultiple, isPending: isLoadingDeletedMultiple } = mutationDeletedMultiple;
+  
+  const fetchGetDetailsCategory = async (rowSelected) => {
+    const resCategoriesDetails = await CategoryService.getDetailsCategory(rowSelected);
+
+    if (resCategoriesDetails?.data) {
+        setStateCategoriesDetails({
+            category_name: resCategoriesDetails?.data.category_name
         })
     }
 
-    const handleOnChange = (e) => {
-        setStateCategory({
-            ...stateCategory,
-            [e.target.name]: e.target.value
-        });
+    setIsLoadingUpdate(false);
+  }
+
+  useEffect(() => {
+    const formValues = {
+      category_name: stateCategoriesDetails.category_name,
+    };
+
+    drawerForm.setFieldsValue(formValues);
+  }, [stateCategoriesDetails, drawerForm]);
+
+  useEffect(() => {
+    if (rowSelected) {
+        fetchGetDetailsCategory(rowSelected);
     }
+  }, [rowSelected])
 
-    const onUpdateCategory = () => {
-        mutationUpdate.mutate(
-            {
-                id: rowSelected, 
-                token: user?.access_token,
-                ...stateCategoriesDetails
-            }, 
-            {
-                onSettled: () => {
-                    queryCategory.refetch();
-                }
-            }
-        )
+  const getAllCategories = async () => {
+    const resAllCategory = await CategoryService.getAllCategory();
+    return resAllCategory;
+  }
+  
+  const queryCategory = useQuery({
+    queryKey: ['categories'],
+    queryFn: getAllCategories,
+    retry: 3,
+    retryDelay: 1000,
+  });
+  
+  const { isLoading: isLoadingCategory, data: categories } = queryCategory;
+
+  useEffect(() => {
+    if(isSuccess && data?.message === 'Success') {
+      message.success("Tạo dạnh mục sản phẩm thành công");
+      handleCancel();
     }
-
-    const handleDetailsCategory = () => {
-        setIsOpenDrawer(true);
+    else if (isError) {
+      message.error("Có gì đó sai sai");
     }
+  }, [isSuccess])
 
-    const renderAction = () => {
-        return (
-            <div>
-                <DeleteOutlined style={{color: 'red', fontSize: '30px', cursor: 'pointer'}} onClick={() => setIsModalOpenDelete(true)}/>
-                <EditOutlined style={{color: 'orange', fontSize: '30px', cursor: 'pointer'}} onClick={handleDetailsCategory}/>
-            </div>
-        )
+  useEffect(() => {
+    if(isSuccessUpdated && dataUpdated?.message === 'Success') {
+      message.success("Cập nhật danh mục sản phẩm thành công");
+      handleCloseDrawer();
     }
+    else if (isErrorUpdated) {
+      message.error("Có gì đó sai sai");
+    }
+  }, [isSuccessUpdated])
+  
+  useEffect(() => {
+    if(isSuccessDeleted && dataDeleted?.message === 'Delete category success') {
+      message.success("Xóa danh mục sản phẩm thành công");
+      handleCancelDelete();
+    }
+    else if (isErrorDeleted) {
+      message.error("Có gì đó sai sai");
+    }
+  }, [isSuccessDeleted])
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-      };
-    
-      const handleReset = (clearFilters) => {
-        clearFilters();
-      };
-    
-      const getColumnSearchProps = (dataIndex, placeholder) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-          <div
-            style={{
-              padding: 8,
-            }}
-            onKeyDown={(e) => e.stopPropagation()}
-          >
-            <InputComponent
-              ref={searchInput}
-              placeholder={`Tìm kiếm ${placeholder}`}
-              value={selectedKeys[0]}
-              onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-              onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-              style={{
-                marginBottom: 8,
-                display: 'block',
-              }}
-            />
-            <Space>
-              <Button
-                type="primary"
-                onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                icon={<SearchOutlined />}
-                size="small"
-                style={{
-                  width: 90,
-                }}
-              >
-                Search
-              </Button>
-              <Button
-                onClick={() => clearFilters && handleReset(clearFilters)}
-                size="small"
-                style={{
-                  width: 90,
-                }}
-              >
-                Reset
-              </Button>
-            </Space>
-          </div>
-        ),
-        filterIcon: (filtered) => (
-          <SearchOutlined
-            style={{
-              color: filtered ? '#1677ff' : undefined,
-            }}
-          />
-        ),
-        onFilter: (value, record) =>
-          record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-          if (visible) {
-            setTimeout(() => searchInput.current?.select(), 100);
-          }
-        },
-    });
+  useEffect(() => {
+    if (isSuccessDeletedMultiple && dataDeletedMultiple) {
+        // Kiểm tra xem có phần tử nào có status === 'OK' không
+        const hasSuccessStatus = dataDeletedMultiple.some(item => item.status === 'OK');
 
-    const columns = [
-        {
-          title: 'Danh mục',
-          dataIndex: 'category_name',
-          sorter: (a, b) => a.category_name.localeCompare(b.category_name),
-          ...getColumnSearchProps('category_name', 'danh mục sản phẩm')
-        },
-        {
-          title: 'Thời gian tạo',
-          dataIndex: 'createdAt',
-          sorter: (a, b) => a.createdAt - b.createdAt,
-          render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss'),
-        },
-        {
-          title: 'Thời gian cập nhật',
-          dataIndex: 'updatedAt',
-          sorter: (a, b) => a.createdAt - b.createdAt,
-          render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss'),
-        },
-        {
-          title: 'Action',
-          dataIndex: 'action',
-          render: renderAction
-        },
-    ];
-    
-    const dataTable = categories?.data.map((category) => {
-        return {
-            ...category, 
-            key: category.id,
-            createdAt: new Date(category.createdAt),
-            updatedAt: new Date(category.updatedAt),
+        if (hasSuccessStatus) {
+            message.success("Xóa danh mục sản phẩm thành công");
+        } else {
+            message.error("Không có danh mục sản phẩm nào được xóa thành công");
         }
+    } else if (isErrorDeletedMultiple) {
+        message.error("Có gì đó sai sai");
+    }
+  }, [isSuccessDeletedMultiple, isErrorDeletedMultiple, dataDeletedMultiple]);
+  
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setStateCategory({
+        category_name: ''
     });
 
-    const handleCancelDelete = () => {
-        setIsModalOpenDelete(false);
-    }
+    modalForm.resetFields();
+  };
 
-    const handleDeleteCategory = () => {
-        mutationDeleted.mutate(
-          {
-            id: rowSelected, 
-            token: user?.access_token
-          },
-          {
-            onSettled: () => {
-                queryCategory.refetch();
-            }
-          }
-        )
-    }
+  const handleCloseDrawer = () => {
+    setIsOpenDrawer(false);
+    // setStateCategoriesDetails({
+    //   category_name: ''
+    // });
 
-    const handleOnChangeDetails = (e) => {
-        setStateCategoriesDetails({
-          ...stateCategoriesDetails,
-          [e.target.name]: e.target.value
-        });
-    }
+    // drawerForm.resetFields();
+  };
 
-    return (
-        <div>
-            <WrapperHeader>Quản lý danh mục sản phẩm</WrapperHeader>
-                <div style={{ marginTop: '10px'}}>
-                    <Button style={{ height: '100px', width: '100px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '60px' }}/></Button>
-                </div>
-                <div style={{ marginTop: '20px' }}>
-                <TableComponent columns={columns} data={dataTable} isLoading={isLoadingCategory} 
-                    onRow={(record, rowIndex) => {
-                        return {
-                            onClick: (event) => {
-                                if (record.id) {
-                                    setRowSelected(record.id);
-                                }
-                            },
-                        };
-                    }}
-                ></TableComponent>
-                </div>
-            <ModalComponent forceRender title="Tạo danh mục sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
-                <Loading isLoading={isPending}>
-                    <Form
-                        name="modalForm"
-                        labelCol={{ span: 6 }}
-                        wrapperCol={{ span: 18 }}
-                        style={{ maxWidth: 600 }}
-                        initialValues={{ remember: true }}
-                        onFinish={onFinish}
-                        autoComplete="off"
-                        form={modalForm}
-                    >
-                    <Form.Item
-                        label="Tên danh mục"
-                        name="category_name"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
-                    >
-                        <InputComponent value={ stateCategory.category_name } onChange={handleOnChange} name="category_name"/>
-                    </Form.Item>
+  const onFinish = () => {
+    mutation.mutate(stateCategory, {
+        onSettled: () => {
+            queryCategory.refetch();
+        }
+    })
+  }
 
-                    <Form.Item wrapperCol={{ offset: 18, span: 16 }}>
-                        <Button type="primary" htmlType="submit">Tạo danh mục</Button>
-                    </Form.Item>
-                    </Form>
-                </Loading>
-            </ModalComponent>
-            <DrawerComponent forceRender title='Chi tiết danh mục sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
-                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
-                    <Form
-                        name="drawerForm"
-                        labelCol={{ span: 8 }}
-                        wrapperCol={{ span: 20 }}
-                        style={{ maxWidth: 600 }}
-                        initialValues={{ remember: true }}
-                        onFinish={onUpdateCategory}
-                        autoComplete="off"
-                        form={drawerForm}
-                    >
-                        <Form.Item
-                            label="Tên danh mục"
-                            name="category_name"
-                            rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
-                        >
-                            <InputComponent value={ stateCategoriesDetails.category_name } onChange={handleOnChangeDetails} name="category_name"/>
-                        </Form.Item>
+  const handleOnChange = (e) => {
+    setStateCategory({
+        ...stateCategory,
+        [e.target.name]: e.target.value
+    });
+  }
 
-                        <Form.Item wrapperCol={{ offset: 15, span: 16 }}>
-                            <Button type="primary" htmlType="submit">Cập nhật danh mục</Button>
-                        </Form.Item>
-                    </Form>
-                </Loading>
-            </DrawerComponent>
-            <ModalComponent title="Xóa danh mục" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteCategory}>
-                <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có muốn xóa danh mục này không?</div>
-                </Loading>
-            </ModalComponent>
-        </div>
+  const onUpdateCategory = () => {
+    mutationUpdate.mutate(
+      {
+        id: rowSelected, 
+        token: user?.access_token,
+        ...stateCategoriesDetails
+      }, 
+      {
+        onSettled: () => {
+            queryCategory.refetch();
+        }
+      }
     )
+  }
+
+  const handleDetailsCategory = () => {
+    setIsOpenDrawer(true);
+  }
+
+  const renderAction = () => {
+    return (
+      <div>
+        <DeleteOutlined style={{color: 'red', fontSize: '30px', cursor: 'pointer'}} onClick={() => setIsModalOpenDelete(true)}/>
+        <EditOutlined style={{color: 'orange', fontSize: '30px', cursor: 'pointer'}} onClick={handleDetailsCategory}/>
+      </div>
+    )
+  }
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+  };
+  
+  const handleReset = (clearFilters) => {
+    clearFilters();
+  };
+  
+  const getColumnSearchProps = (dataIndex, placeholder) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <InputComponent
+          ref={searchInput}
+          placeholder={`Tìm kiếm ${placeholder}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1677ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+  });
+
+  const columns = [
+    {
+      title: 'Danh mục',
+      dataIndex: 'category_name',
+      sorter: (a, b) => a.category_name.localeCompare(b.category_name),
+      ...getColumnSearchProps('category_name', 'danh mục sản phẩm')
+    },
+    {
+      title: 'Thời gian tạo',
+      dataIndex: 'createdAt',
+      sorter: (a, b) => a.createdAt - b.createdAt,
+      render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss'),
+    },
+    {
+      title: 'Thời gian cập nhật',
+      dataIndex: 'updatedAt',
+      sorter: (a, b) => a.createdAt - b.createdAt,
+      render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss'),
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      render: renderAction
+    },
+  ];
+  
+  const dataTable = categories?.data.map((category) => {
+    return {
+      ...category, 
+      key: category.id,
+      createdAt: new Date(category.createdAt),
+      updatedAt: new Date(category.updatedAt),
+    }
+  });
+
+  const handleCancelDelete = () => {
+    setIsModalOpenDelete(false);
+  }
+
+  const handleDeleteCategory = () => {
+    mutationDeleted.mutate(
+      {
+        id: rowSelected, 
+        token: user?.access_token
+      },
+      {
+        onSettled: () => {
+            queryCategory.refetch();
+        }
+      }
+    )
+  }
+
+  const handleOnChangeDetails = (e) => {
+    setStateCategoriesDetails({
+      ...stateCategoriesDetails,
+      [e.target.name]: e.target.value
+    });
+  }
+
+  return (
+    <div>
+      <WrapperHeader>Quản lý danh mục sản phẩm</WrapperHeader>
+      <div style={{ marginTop: '10px'}}>
+          <Button style={{ height: '100px', width: '100px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '60px' }}/></Button>
+      </div>
+      <div style={{ marginTop: '20px' }}>
+        <TableComponent handleDeleteMultiple={handleDeleteMultipleCategories} columns={columns} data={dataTable} isLoading={isLoadingCategory} 
+            onRow={(record, rowIndex) => {
+                return {
+                    onClick: (event) => {
+                        if (record.id) {
+                            setRowSelected(record.id);
+                        }
+                    },
+                };
+            }}
+        ></TableComponent>
+      </div>
+      <ModalComponent forceRender title="Tạo danh mục sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+        <Loading isLoading={isPending}>
+          <Form
+            name="modalForm"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 18 }}
+            style={{ maxWidth: 600 }}
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            autoComplete="off"
+            form={modalForm}
+          >
+            <Form.Item
+              label="Tên danh mục"
+              name="category_name"
+              rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
+            >
+              <InputComponent value={ stateCategory.category_name } onChange={handleOnChange} name="category_name"/>
+            </Form.Item>
+
+            <Form.Item wrapperCol={{ offset: 18, span: 16 }}>
+                <Button type="primary" htmlType="submit">Tạo danh mục</Button>
+            </Form.Item>
+          </Form>
+        </Loading>
+      </ModalComponent>
+      <DrawerComponent forceRender title='Chi tiết danh mục sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
+        <Loading isLoading={isLoadingUpdate || isLoadingUpdated || isLoadingDeletedMultiple}>
+          <Form
+            name="drawerForm"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 20 }}
+            style={{ maxWidth: 600 }}
+            initialValues={{ remember: true }}
+            onFinish={onUpdateCategory}
+            autoComplete="off"
+            form={drawerForm}
+          >
+            <Form.Item
+                label="Tên danh mục"
+                name="category_name"
+                rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
+            >
+                <InputComponent value={ stateCategoriesDetails.category_name } onChange={handleOnChangeDetails} name="category_name"/>
+            </Form.Item>
+
+            <Form.Item wrapperCol={{ offset: 15, span: 16 }}>
+                <Button type="primary" htmlType="submit">Cập nhật danh mục</Button>
+            </Form.Item>
+          </Form>
+        </Loading>
+      </DrawerComponent>
+      <ModalComponent title="Xóa danh mục" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteCategory}>
+          <Loading isLoading={isLoadingDeleted}>
+              <div>Bạn có muốn xóa danh mục này không?</div>
+          </Loading>
+      </ModalComponent>
+    </div>
+  )
 }
 
 export default AdminCategory

@@ -52,7 +52,7 @@ export let updateUser = async (id, access_token, data) => {
 }
 
 export let deleteUser = async (id, access_token) => {
-    let res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/user/delete-user/${id}`, {
+    let res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/user/delete-user/${id}`, {
         headers: {
             authorization: `Bearer ${access_token}`,
         }
@@ -60,3 +60,12 @@ export let deleteUser = async (id, access_token) => {
     return res.data;
 }
 
+export let deleteMultipleUsers = async (data, access_token) => {
+    let res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/user/delete-multiple-users/`, {
+        data: data,
+        headers: {
+            authorization: `Bearer ${access_token}`,
+        }
+    });
+    return res.data;
+}

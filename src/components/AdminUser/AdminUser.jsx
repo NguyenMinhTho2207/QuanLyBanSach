@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-import { Button, Form, Input, Modal, Space } from 'antd'
-import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import { WrapperHeader } from './style'
+import { Button, Form, Space } from 'antd'
+import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
 import InputComponent from '../InputComponent/InputComponent'
 import ModalComponent from '../ModalComponent/ModalComponent'
@@ -10,13 +10,11 @@ import DrawerComponent from '../DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import { useMutationHooks } from '../../hooks/userMutationHook'
 import { useQuery } from '@tanstack/react-query'
-import { getBase64 } from '../../utils'
 import * as message from '../../components/Message/Message'
 import * as UserService from '../../services/UserService'
 import avatarDefault from '../../assets/images/user/user-default.png'
 
 const AdminUser = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState();
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
@@ -53,8 +51,32 @@ const AdminUser = () => {
     }
   );
 
+  const mutationDeletedMultiple = useMutationHooks(
+    (data) => { 
+      const { token, ids } = data;
+      const res = UserService.deleteMultipleUsers(ids, token);
+
+      return res;
+    }
+  );
+
+  const handleDeleteMultipleUsers = (ids) => {
+    mutationDeletedMultiple.mutate(
+      {
+        ids: ids, 
+        token: user?.access_token
+      },
+      {
+        onSettled: () => {
+          queryUser.refetch();
+        }
+      }
+    )
+  }
+
   const { data: dataUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated, isPending: isLoadingUpdated } = mutationUpdate;
   const { data: dataDeleted, isSuccess: isSuccessDeleted, isError: isErrorDeleted, isPending: isLoadingDeleted } = mutationDeleted;
+  const { data: dataDeletedMultiple, isSuccess: isSuccessDeletedMultiple, isError: isErrorDeletedMultiple, isPending: isLoadingDeletedMultiple } = mutationDeletedMultiple;
 
   const getAllUsers = async () => {
     const res = await UserService.getAllUsers(user?.access_token);
@@ -89,6 +111,21 @@ const AdminUser = () => {
       message.error("Có gì đó sai sai");
     }
   }, [isSuccessDeleted])
+
+  useEffect(() => {
+    if (isSuccessDeletedMultiple && dataDeletedMultiple) {
+        // Kiểm tra xem có phần tử nào có status === 'OK' không
+        const hasSuccessStatus = dataDeletedMultiple.some(item => item.status === 'OK');
+
+        if (hasSuccessStatus) {
+            message.success("Xóa người dùng thành công");
+        } else {
+            message.error("Không có người dùng nào được xóa thành công");
+        }
+    } else if (isErrorDeletedMultiple) {
+        message.error("Có gì đó sai sai");
+    }
+  }, [isSuccessDeletedMultiple, isErrorDeletedMultiple, dataDeletedMultiple]);
 
   const fetchGetDetailsUser = async (rowSelected) => {
     const res = await UserService.getDetailsUser(rowSelected, user?.access_token);
@@ -310,18 +347,6 @@ const AdminUser = () => {
     });
   }
 
-  const handleOnChangeAvatarDetails = async ({fileList}) => {
-    const file = fileList[0];
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-
-    setStateUsersDetails({
-      ...stateUsersDetails,
-      image: file.preview
-    })
-  }
-
   const onUpdateUser = () => {
     mutationUpdate.mutate(
       {
@@ -341,7 +366,7 @@ const AdminUser = () => {
     <div>
         <WrapperHeader>Quản lý người dùng</WrapperHeader>
         <div style={{ marginTop: '20px' }}>
-          <TableComponent columns={columns} data={dataTable} isLoading={isLoadingUser} 
+          <TableComponent handleDeleteMultiple={handleDeleteMultipleUsers} columns={columns} data={dataTable} isLoading={isLoadingUser} 
             onRow={(record, rowIndex) => {
               return {
                 onClick: (event) => {
@@ -354,7 +379,7 @@ const AdminUser = () => {
           ></TableComponent>
         </div>
         <DrawerComponent forceRender title='Chi tiết người dùng' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
-          <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
+          <Loading isLoading={isLoadingUpdate || isLoadingUpdated || isLoadingDeletedMultiple}>
             <Form
               name="drawerForm"
               labelCol={{ span: 8 }}

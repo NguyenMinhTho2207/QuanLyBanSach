@@ -33,3 +33,13 @@ export let deleteCategory = async (id, access_token) => {
     });
     return res.data;
 }
+
+export let deleteMultipleCategories = async (data, access_token) => {
+    let res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/category/delete-multiple-categories/`, {
+        data: data,
+        headers: {
+            authorization: `Bearer ${access_token}`,
+        }
+    });
+    return res.data;
+}

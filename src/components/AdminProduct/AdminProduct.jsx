@@ -99,15 +99,39 @@ const AdminProduct = () => {
     }
   );
 
+  const mutationDeletedMultiple = useMutationHooks(
+    (data) => { 
+      const { token, ids } = data;
+      const res = ProductService.deleteMultipleProducts(ids, token);
+
+      return res;
+    }
+  );
+
   const { Option } = Select;
   const fetchCategoryAll = async () => {
-    const resCatetogry = await CategoryService.getAllCategory();
-    return resCatetogry;
+    const res = await CategoryService.getAllCategory();
+    return res;
+  }
+
+  const handleDeleteMultipleProducts = (ids) => {
+    mutationDeletedMultiple.mutate(
+      {
+        ids: ids, 
+        token: user?.access_token
+      },
+      {
+        onSettled: () => {
+          queryProduct.refetch();
+        }
+      }
+    )
   }
   
   const { data, isSuccess, isError, isPending } = mutation;
   const { data: dataUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated, isPending: isLoadingUpdated } = mutationUpdate;
   const { data: dataDeleted, isSuccess: isSuccessDeleted, isError: isErrorDeleted, isPending: isLoadingDeleted } = mutationDeleted;
+  const { data: dataDeletedMultiple, isSuccess: isSuccessDeletedMultiple, isError: isErrorDeletedMultiple, isPending: isLoadingDeletedMultiple } = mutationDeletedMultiple;
 
   const { isLoading, data: categories } = useQuery({
     queryKey: ['categories'],
@@ -159,6 +183,21 @@ const AdminProduct = () => {
       message.error("Có gì đó sai sai");
     }
   }, [isSuccessDeleted])
+
+  useEffect(() => {
+    if (isSuccessDeletedMultiple && dataDeletedMultiple) {
+        // Kiểm tra xem có phần tử nào có status === 'OK' không
+        const hasSuccessStatus = dataDeletedMultiple.some(item => item.status === 'OK');
+
+        if (hasSuccessStatus) {
+            message.success("Xóa sản phẩm thành công");
+        } else {
+            message.error("Không có sản phẩm nào được xóa thành công");
+        }
+    } else if (isErrorDeletedMultiple) {
+        message.error("Có gì đó sai sai");
+    }
+  }, [isSuccessDeletedMultiple, isErrorDeletedMultiple, dataDeletedMultiple]);
 
   const fetchGetDetailsProduct = async (rowSelected) => {
     const resProductsDetails = await ProductService.getDetailsProduct(rowSelected);
@@ -518,7 +557,7 @@ const AdminProduct = () => {
           <Button style={{ height: '100px', width: '100px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '60px' }}/></Button>
         </div>
         <div style={{ marginTop: '20px' }}>
-          <TableComponent columns={columns} data={dataTable} isLoading={isLoadingProduct} 
+          <TableComponent handleDeleteMultiple={handleDeleteMultipleProducts} columns={columns} data={dataTable} isLoading={isLoadingProduct} 
             onRow={(record, rowIndex) => {
               return {
                 onClick: (event) => {
@@ -638,7 +677,7 @@ const AdminProduct = () => {
           </Loading>
         </ModalComponent>
         <DrawerComponent forceRender title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="30%">
-          <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
+          <Loading isLoading={isLoadingUpdate || isLoadingUpdated || isLoadingDeletedMultiple}>
             <Form
               name="drawerForm"
               labelCol={{ span: 8 }}
