@@ -155,7 +155,7 @@ const AdminProduct = () => {
   const { isLoading: isLoadingProduct, data: products } = queryProduct;
 
   useEffect(() => {
-    if(isSuccess && data?.message === 'Success') {
+    if(isSuccess && products?.message === 'Success') {
       message.success("Tạo sản phẩm thành công");
       handleCancel();
     }

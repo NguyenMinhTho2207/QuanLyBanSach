@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { WrapperHeader } from './style'
+import { WrapperHeader, WrapperUploadFile } from './style'
 import { Button, Form, Space } from 'antd'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query'
 import * as message from '../../components/Message/Message'
 import * as UserService from '../../services/UserService'
 import avatarDefault from '../../assets/images/user/user-default.png'
+import { getBase64 } from '../../utils'
 
 const AdminUser = () => {
   const [rowSelected, setRowSelected] = useState();
@@ -148,7 +149,6 @@ const AdminUser = () => {
   
   useEffect(() => {
     const formValues = {
-      product_name: stateUsersDetails.product_name,
       address: stateUsersDetails.address,
       avatar: stateUsersDetails.avatar,
       email: stateUsersDetails.email,
@@ -362,6 +362,18 @@ const AdminUser = () => {
     )
   }
 
+  const handleOnChangeAvatarDetails = async ({fileList}) => {
+    const file = fileList[0];
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+
+    setStateUsersDetails({
+      ...stateUsersDetails,
+      avatar: file.preview
+    })
+  }
+
   return (
     <div>
         <WrapperHeader>Quản lý người dùng</WrapperHeader>
@@ -390,13 +402,18 @@ const AdminUser = () => {
               autoComplete="on"
               form={drawerForm}
             >
-              {/* <Form.Item
-                label="Avatar"
-                name="avatar"
-                rules={[{ required: true, message: 'Vui lòng nhập tên người dùng!' }]}
+              <Form.Item
+                label="Hình ảnh sản phẩm"
+                name="image"
+                rules={[{ required: true, message: 'Vui lòng chọn ảnh sản phẩm!' }]}
               >
-                <InputComponent value={ stateUsers.product_name } onChange={handleOnChange} name="product_name"/>
-              </Form.Item> */}
+                <WrapperUploadFile onChange={handleOnChangeAvatarDetails} maxCount={1}>
+                  <Button>Select File</Button>
+                  {stateUsersDetails?.avatar && (
+                    <img src={stateUsersDetails.avatar} style={{height: '250px',  width: '250px', borderRadius: '50%', objectFit: 'cover'}} alt='avatar'/>
+                  )}
+                </WrapperUploadFile>
+              </Form.Item>
 
               <Form.Item
                 label="Tên người dùng"

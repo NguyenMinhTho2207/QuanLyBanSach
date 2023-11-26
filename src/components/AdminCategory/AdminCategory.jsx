@@ -131,7 +131,7 @@ const AdminCategory = () => {
   const { isLoading: isLoadingCategory, data: categories } = queryCategory;
 
   useEffect(() => {
-    if(isSuccess && data?.message === 'Success') {
+    if(isSuccess && categories?.message === 'Success') {
       message.success("Tạo dạnh mục sản phẩm thành công");
       handleCancel();
     }
