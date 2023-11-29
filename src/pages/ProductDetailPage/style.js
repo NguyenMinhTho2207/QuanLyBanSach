@@ -37,6 +37,7 @@ export const WrapperPriceTextProduct = styled.h1 `
     font-weight: 500;
     padding: 10px;
     margin-top: 10px;
+    color: rgb(255, 66, 78);
 `
 
 export const WrapperAddresstProduct = styled.div `
@@ -67,14 +68,7 @@ export const WrapperQualityProduct = styled.div `
 `
 
 export const WrapperInputNumber = styled(InputNumber) `
-    &.ant-input-number {
-        width: 60px;
-        border-top: none;
-        border-bottom: none;
-
-        &.ant-input-number-handler-wrap {
-            display: none !important;
-        }
-    },
-
+    & .ant-input-number-handler-wrap {
+        display: none;
+    }
 `

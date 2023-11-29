@@ -47,6 +47,7 @@ const HomePage = () => {
                 categoryId={product.category_id}
                 discount={product.discount}
                 soldQuantity={product.sold_quantity}
+                id={product.id} 
               ></CardComponent>
             )
           })}

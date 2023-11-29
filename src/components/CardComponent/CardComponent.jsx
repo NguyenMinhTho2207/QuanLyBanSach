@@ -2,9 +2,14 @@ import React from 'react'
 import { StyleNameProduct, WrapperCardStyle, WrapperImageStyle, WrapperPriceDiscountText, WrapperPriceText, WrapperReportText, WrapperStyleTextSell } from './style'
 import { StarFilled } from '@ant-design/icons';
 import logo from '../../assets/images/chinhhang.png'
+import { useNavigate } from 'react-router-dom';
 
 const CardComponent = (props) => {
-    const { quantity, description, image, productName, price, rating, categoryId, discount, soldQuantity } = props;
+    const { quantity, description, image, productName, price, rating, categoryId, discount, soldQuantity, id } = props;
+    const navigate = useNavigate();
+    const handleDetailsProduct = (id) => {
+        navigate(`/product-details/${id}`);
+    }
 
     return (
         <WrapperCardStyle
@@ -13,6 +18,7 @@ const CardComponent = (props) => {
             style={{ width: 200 }}
             bodyStyle={{ padding: '10px'}}
             cover={<img alt="example" src={image} />}
+            onClick={() => handleDetailsProduct(id)}
         >
             <WrapperImageStyle src={logo} alt='chinhhang'/>
             <StyleNameProduct>{productName}</StyleNameProduct>
