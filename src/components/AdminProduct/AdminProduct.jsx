@@ -7,7 +7,7 @@ import InputComponent from '../InputComponent/InputComponent'
 import { WrapperUploadFile } from '../../pages/ProfilePage/style'
 import { getBase64 } from '../../utils'
 import * as ProductService from '../../services/ProductService'
-import * as CategoryService from '../../services/CategoryService'
+import * as ProductCategoryService from '../../services/ProductCategoryService'
 import { useMutationHooks } from '../../hooks/userMutationHook'
 import Loading from '../LoadingComponent/Loading'
 import * as message from '../../components/Message/Message'
@@ -28,8 +28,8 @@ const AdminProduct = () => {
 
   const [stateProducts, setStateProducts] = useState({
     product_name: '',
-    category_id: '',
-    category_name: '',
+    product_category_id: '',
+    product_category_name: '',
     quantity: '',
     price: '',
     rating: '',
@@ -40,8 +40,8 @@ const AdminProduct = () => {
 
   const [stateProductsDetails, setStateProductsDetails] = useState({
     product_name: '',
-    category_id: '',
-    category_name: '',
+    product_category_id: '',
+    product_category_name: '',
     quantity: '',
     price: '',
     rating: '',
@@ -54,8 +54,8 @@ const AdminProduct = () => {
     (data) => { 
       const { 
         product_name,
-        category_id,
-        category_name,
+        product_category_id,
+        product_category_name,
         quantity,
         price,
         rating,
@@ -65,8 +65,8 @@ const AdminProduct = () => {
 
       const resProduct = ProductService.createProduct({
         product_name,
-        category_id,
-        category_name,
+        product_category_id,
+        product_category_name,
         quantity,
         price,
         rating,
@@ -110,7 +110,7 @@ const AdminProduct = () => {
 
   const { Option } = Select;
   const fetchCategoryAll = async () => {
-    const res = await CategoryService.getAllCategory();
+    const res = await ProductCategoryService.getAllCategory();
     return res;
   }
 
@@ -205,8 +205,8 @@ const AdminProduct = () => {
     if (resProductsDetails?.data) {
       setStateProductsDetails({
         product_name: resProductsDetails?.data.product_name,
-        category_id: resProductsDetails?.data.category_id,
-        category_name: resProductsDetails?.data.category_name,
+        product_category_id: resProductsDetails?.data.product_category_id,
+        product_category_name: resProductsDetails?.data.product_category_name,
         quantity: resProductsDetails?.data.quantity,
         price: resProductsDetails?.data.price,
         rating: resProductsDetails?.data.rating,
@@ -224,7 +224,7 @@ const AdminProduct = () => {
   useEffect(() => {
     const formValues = {
       product_name: stateProductsDetails.product_name,
-      category_id: stateProductsDetails.category_id,
+      product_category_id: stateProductsDetails.product_category_id,
       quantity: stateProductsDetails.quantity,
       price: stateProductsDetails.price,
       rating: stateProductsDetails.rating,
@@ -350,9 +350,9 @@ const AdminProduct = () => {
     },
     {
       title: 'Danh mục',
-      dataIndex: 'category_name',
+      dataIndex: 'product_category_name',
       sorter: (a, b) => a.product_name.localeCompare(b.product_name),
-      ...getColumnSearchProps('category_name', 'danh mục sản phẩm')
+      ...getColumnSearchProps('product_category_name', 'danh mục sản phẩm')
     },
     {
       title: 'Giá',
@@ -446,8 +446,8 @@ const AdminProduct = () => {
     setIsModalOpen(false);
     setStateProducts({
       product_name: '',
-      category_id: '',
-      category_name: '',
+      product_category_id: '',
+      product_category_name: '',
       quantity: '',
       price: '',
       rating: '',
@@ -467,8 +467,8 @@ const AdminProduct = () => {
     setIsOpenDrawer(false);
     // setStateProductsDetails({
     //   product_name: '',
-    //   category_id: '',
-    //   category_name: '',
+    //   product_category_id: '',
+    //   product_category_name: '',
     //   quantity: '',
     //   price: '',
     //   rating: '',
@@ -591,27 +591,27 @@ const AdminProduct = () => {
 
               <Form.Item
                 label="Danh mục"
-                name="category_id"
+                name="product_category_id"
                 rules={[{ required: true, message: 'Vui lòng nhập danh mục!' }]}
               >
                 <Select
                   placeholder="Chọn danh mục"
                   loading={isLoading}
-                  value={stateProducts.category_id}
+                  value={stateProducts.product_category_id}
                   onChange={(value) => {
                     const selectedCategory = categories.data.find(category => category.id === value);
               
-                    // Thay đổi ở đây: cập nhật trực tiếp category_id và category_name trong state
+                    // Thay đổi ở đây: cập nhật trực tiếp product_category_id và product_category_name trong state
                     setStateProducts({
                       ...stateProducts,
-                      category_id: value || '',
-                      category_name: selectedCategory ? selectedCategory.category_name || '' : '',
+                      product_category_id: value || '',
+                      product_category_name: selectedCategory ? selectedCategory.product_category_name || '' : '',
                     });
                   }}
                 >
                   {Array.isArray(categories?.data) && categories.data.map((category) => (
                     <Option key={category.id} value={category.id}>
-                      {category.category_name}
+                      {category.product_category_name}
                     </Option>
                   ))}
                 </Select>
@@ -636,9 +636,12 @@ const AdminProduct = () => {
               <Form.Item
                 label="Điểm đánh giá"
                 name="rating"
-                rules={[{ required: true, message: 'Vui lòng nhập điểm đánh giá sản phẩm!' }]}
+                rules={[
+                  { required: true, message: 'Vui lòng nhập điểm đánh giá sản phẩm!' },
+                  { pattern: /^(\d+(\.\d{0,1})?)?$/, message: 'Vui lòng nhập số và tối đa một dấu chấm.' },
+                ]}
               >
-                <InputComponent type="number" value={ stateProducts.rating } onChange={handleOnChange} name="rating" min="1" max="5"/>
+                <InputComponent type="text" value={stateProducts.rating} onChange={handleOnChange} name="rating" />
               </Form.Item>
 
               <Form.Item
@@ -698,27 +701,27 @@ const AdminProduct = () => {
 
               <Form.Item
                 label="Danh mục"
-                name="category_id"
+                name="product_category_id"
                 rules={[{ required: true, message: 'Vui lòng nhập danh mục!' }]}
               >
                 <Select
                   placeholder="Chọn danh mục"
                   loading={isLoading}
-                  value={stateProductsDetails?.category_id}
+                  value={stateProductsDetails?.product_category_id}
                   onChange={(value) => {
                     const selectedCategory = categories.data.find(category => category.id === value);
               
-                    // Thay đổi ở đây: cập nhật trực tiếp category_id và category_name trong state
+                    // Thay đổi ở đây: cập nhật trực tiếp product_category_id và product_category_name trong state
                     setStateProducts({
                       ...stateProductsDetails,
-                      category_id: value || '',
-                      category_name: selectedCategory ? selectedCategory.category_name || '' : '',
+                      product_category_id: value || '',
+                      product_category_name: selectedCategory ? selectedCategory.product_category_name || '' : '',
                     });
                   }}
                 >
                   {Array.isArray(categories?.data) && categories.data.map((category) => (
                     <Option key={category.id} value={category.id}>
-                      {category.category_name}
+                      {category.product_category_name}
                     </Option>
                   ))}
                 </Select>

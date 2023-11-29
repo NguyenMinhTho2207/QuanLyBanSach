@@ -3,7 +3,7 @@ import { Table } from 'antd';
 import Loading from '../LoadingComponent/Loading';
 
 const TableComponent = (props) => {
-  const { selectionType = 'checkbox', data = [], isLoading = false, columns = [], handleDeleteMultipleProducts } = props;
+  const { selectionType = 'checkbox', data = [], isLoading = false, columns = [], handleDeleteMultiple } = props;
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   // rowSelection object indicates the need for row selection
   const rowSelection = {
@@ -18,7 +18,7 @@ const TableComponent = (props) => {
   };
 
   const handleDeleteAll = () => {
-    handleDeleteMultipleProducts(selectedRowKeys);
+    handleDeleteMultiple(selectedRowKeys);
   }
 
   return (

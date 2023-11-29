@@ -5,7 +5,7 @@ import { UserOutlined, AppstoreOutlined, DropboxOutlined } from '@ant-design/ico
 import NavbarLoginComponent from '../../components/NavbarLoginComponent/NavbarLoginComponent';
 import AdminUser from '../../components/AdminUser/AdminUser';
 import AdminProduct from '../../components/AdminProduct/AdminProduct';
-import AdminCategory from '../../components/AdminCategory/AdminCategory';
+import AdminProductCategory from '../../components/AdminProductCategory/AdminProductCategory';
 
 export const AdminPage = () => {
   const items  = [
@@ -32,7 +32,7 @@ export const AdminPage = () => {
 
       case 'category':
         return (
-          <AdminCategory></AdminCategory>
+          <AdminProductCategory></AdminProductCategory>
         )
 
       default:

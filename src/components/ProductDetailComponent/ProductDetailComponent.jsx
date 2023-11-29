@@ -7,8 +7,11 @@ import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import * as ProductService from '../../services/ProductService'
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ProductDetailComponent = ({productId}) => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [quantityProduct, setQuantityProduct] = useState(1);
     const user = useSelector((state) => state.user);
     const onChange = (value) => {
@@ -32,6 +35,12 @@ const ProductDetailComponent = ({productId}) => {
             if (quantityProduct > 1) {
                 setQuantityProduct(quantityProduct - 1);
             }
+        }
+    }
+
+    const handleAddOrderProduct = () => {
+        if (!user?.id) {
+            navigate(`/sign-in`, {state: location?.pathname});
         }
     }
 
@@ -112,6 +121,7 @@ const ProductDetailComponent = ({productId}) => {
                                 border: 'none',
                                 borderRadius: '4px'
                             }}
+                            onClick={handleAddOrderProduct}
                             textButton={'Chọn mua'}
                             styleTextButton={{ color: '#fff', ontSize: '15px', fontWeight: '700' }}
                         >

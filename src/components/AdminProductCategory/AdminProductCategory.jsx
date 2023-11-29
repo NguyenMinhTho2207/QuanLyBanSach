@@ -4,17 +4,17 @@ import { Button, Form, Space } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
 import InputComponent from '../InputComponent/InputComponent'
-import * as CategoryService from '../../services/CategoryService'
+import * as ProductCategoryService from '../../services/ProductCategoryService'
 import { useMutationHooks } from '../../hooks/userMutationHook'
 import Loading from '../LoadingComponent/Loading'
-import * as message from '../../components/Message/Message'
+import * as message from '../Message/Message'
 import ModalComponent from '../ModalComponent/ModalComponent'
 import { useSelector } from 'react-redux'
 import { useQuery } from '@tanstack/react-query'
 import DrawerComponent from '../DrawerComponent/DrawerComponent'
 import moment from 'moment/moment'
 
-const AdminCategory = () => {
+const AdminProductCategory = () => {
   const [modalForm] = Form.useForm();
   const [drawerForm] = Form.useForm();
   const [rowSelected, setRowSelected] = useState();
@@ -27,17 +27,17 @@ const AdminCategory = () => {
   const user = useSelector((state) => state?.user);
 
   const [stateCategory, setStateCategory] = useState({
-    category_name: ''
+    product_category_name: ''
   });
 
   const [stateCategoriesDetails, setStateCategoriesDetails] = useState({
-    category_name: ''
+    product_category_name: ''
   });
 
   const mutation = useMutationHooks(
     (data) => { 
-      const { category_name } = data;
-      const res = CategoryService.createCategory( {category_name} );
+      const { product_category_name } = data;
+      const res = ProductCategoryService.createCategory( {product_category_name} );
       return res;
     }
   );
@@ -46,7 +46,7 @@ const AdminCategory = () => {
     (data) => { 
       const { id, token, ...rests } = data;
   
-      const resCategory = CategoryService.updateCategory(id, token, { ...rests });
+      const resCategory = ProductCategoryService.updateCategory(id, token, { ...rests });
   
       return resCategory;
     }
@@ -56,7 +56,7 @@ const AdminCategory = () => {
     (data) => { 
       const { id, token } = data;
   
-      const res = CategoryService.deleteCategory(id, token);
+      const res = ProductCategoryService.deleteCategory(id, token);
   
       return res;
     }
@@ -65,7 +65,7 @@ const AdminCategory = () => {
   const mutationDeletedMultiple = useMutationHooks(
     (data) => { 
       const { token, ids } = data;
-      const res = CategoryService.deleteMultipleCategories(ids, token);
+      const res = ProductCategoryService.deleteMultipleCategories(ids, token);
 
       return res;
     }
@@ -91,11 +91,11 @@ const AdminCategory = () => {
   const { data: dataDeletedMultiple, isSuccess: isSuccessDeletedMultiple, isError: isErrorDeletedMultiple, isPending: isLoadingDeletedMultiple } = mutationDeletedMultiple;
   
   const fetchGetDetailsCategory = async (rowSelected) => {
-    const resCategoriesDetails = await CategoryService.getDetailsCategory(rowSelected);
+    const resCategoriesDetails = await ProductCategoryService.getDetailsCategory(rowSelected);
 
     if (resCategoriesDetails?.data) {
         setStateCategoriesDetails({
-            category_name: resCategoriesDetails?.data.category_name
+            product_category_name: resCategoriesDetails?.data.product_category_name
         })
     }
 
@@ -104,7 +104,7 @@ const AdminCategory = () => {
 
   useEffect(() => {
     const formValues = {
-      category_name: stateCategoriesDetails.category_name,
+      product_category_name: stateCategoriesDetails.product_category_name,
     };
 
     drawerForm.setFieldsValue(formValues);
@@ -117,7 +117,7 @@ const AdminCategory = () => {
   }, [rowSelected])
 
   const getAllCategories = async () => {
-    const resAllCategory = await CategoryService.getAllCategory();
+    const resAllCategory = await ProductCategoryService.getAllCategory();
     return resAllCategory;
   }
   
@@ -151,7 +151,7 @@ const AdminCategory = () => {
   }, [isSuccessUpdated])
   
   useEffect(() => {
-    if(isSuccessDeleted && dataDeleted?.message === 'Delete category success') {
+    if(isSuccessDeleted && dataDeleted?.message === 'Delete product category success') {
       message.success("Xóa danh mục sản phẩm thành công");
       handleCancelDelete();
     }
@@ -178,7 +178,7 @@ const AdminCategory = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
     setStateCategory({
-        category_name: ''
+        product_category_name: ''
     });
 
     modalForm.resetFields();
@@ -187,7 +187,7 @@ const AdminCategory = () => {
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
     // setStateCategoriesDetails({
-    //   category_name: ''
+    //   product_category_name: ''
     // });
 
     // drawerForm.resetFields();
@@ -306,9 +306,9 @@ const AdminCategory = () => {
   const columns = [
     {
       title: 'Danh mục',
-      dataIndex: 'category_name',
-      sorter: (a, b) => a.category_name.localeCompare(b.category_name),
-      ...getColumnSearchProps('category_name', 'danh mục sản phẩm')
+      dataIndex: 'product_category_name',
+      sorter: (a, b) => a.product_category_name.localeCompare(b.product_category_name),
+      ...getColumnSearchProps('product_category_name', 'danh mục sản phẩm')
     },
     {
       title: 'Thời gian tạo',
@@ -396,10 +396,10 @@ const AdminCategory = () => {
           >
             <Form.Item
               label="Tên danh mục"
-              name="category_name"
+              name="product_category_name"
               rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
             >
-              <InputComponent value={ stateCategory.category_name } onChange={handleOnChange} name="category_name"/>
+              <InputComponent value={ stateCategory.product_category_name } onChange={handleOnChange} name="product_category_name"/>
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 18, span: 16 }}>
@@ -422,10 +422,10 @@ const AdminCategory = () => {
           >
             <Form.Item
                 label="Tên danh mục"
-                name="category_name"
+                name="product_category_name"
                 rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
             >
-                <InputComponent value={ stateCategoriesDetails.category_name } onChange={handleOnChangeDetails} name="category_name"/>
+                <InputComponent value={ stateCategoriesDetails.product_category_name } onChange={handleOnChangeDetails} name="product_category_name"/>
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 15, span: 16 }}>
@@ -443,4 +443,4 @@ const AdminCategory = () => {
   )
 }
 
-export default AdminCategory
+export default AdminProductCategory

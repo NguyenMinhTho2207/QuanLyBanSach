@@ -5,7 +5,7 @@ import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
 import imageLogo from '../../assets/images/logo-login.png'
 import { Image } from 'antd'
 import { EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import * as UserService from '../../services/UserService'
 import { useMutationHooks } from '../../hooks/userMutationHook'
 import Loading from '../../components/LoadingComponent/Loading'
@@ -15,26 +15,34 @@ import { useDispatch } from 'react-redux'
 import { updateUser } from '../../redux/slice/userSlice'
 
 const SignInPage = () => {
-  let [isShowPassword, setIsShowPassword] = useState(false);
-  let [email, setEmail] = useState("");
-  let [password, setPassword] = useState("");
-  let dispatch = useDispatch();
-  let navigate = useNavigate();
+  const [isShowPassword, setIsShowPassword] = useState(false);
+  const location = useLocation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   
-  let mutation = useMutationHooks(
+  const mutation = useMutationHooks(
     data => UserService.loginUser(data)
   );
 
-  let { data, isPending, isSuccess } = mutation;
+  const { data, isPending, isSuccess } = mutation;
 
   useEffect(() => {
     if (data?.message === "Success") {
+      if (location?.state) {
+        navigate(location?.state);
+      }
+      else {
+        navigate('/');
+      }
+      
       message.success("Đăng nhập thành công");
-      navigate('/');
+
       localStorage.setItem('access_token', JSON.stringify(data?.access_token));
       
       if (data?.access_token) {
-        let decoded = jwtDecode(data?.access_token);
+        const decoded = jwtDecode(data?.access_token);
 
         if (decoded?.id) {
           handleGetDetailsUser(decoded?.id, data?.access_token)
@@ -43,20 +51,20 @@ const SignInPage = () => {
     }
   }, [isSuccess]);
 
-  let handleGetDetailsUser = async (id, token) => {
-    let res = await UserService.getDetailsUser(id, token);
+  const handleGetDetailsUser = async (id, token) => {
+    const res = await UserService.getDetailsUser(id, token);
     dispatch(updateUser({ ...res?.data, access_token: token }));
   }
 
-  let handleOnChangeEmail = (value) => {
+  const handleOnChangeEmail = (value) => {
     setEmail(value);
   }
 
-  let handleOnChangePassword = (value) => {
+  const handleOnChangePassword = (value) => {
     setPassword(value);
   }
 
-  let handleSignIn = () => {
+  const handleSignIn = () => {
     mutation.mutate({
       email,
       password
