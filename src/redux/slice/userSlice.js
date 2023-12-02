@@ -12,11 +12,11 @@ const initialState = {
 }
 
 export const userSlice = createSlice({
-  name: 'counter',
+  name: 'user',
   initialState,
   reducers: {
     updateUser: (state, action) => {
-      let { id, name = '', email = '', phone_number = '', address = '', avatar = '', access_token = '', is_admin } = action.payload
+      let { id, name = '', email = '', phone_number = '', address = '', avatar = '', access_token = '', is_admin } = action.payload;
       state.id = id;
       state.name = name;
       state.email = email;

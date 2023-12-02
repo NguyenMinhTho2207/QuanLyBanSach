@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ProductDetailComponent from '../../components/ProductDetailComponent/ProductDetailComponent'
 import FooterComponent from '../../components/FooterComponent/FooterComponent'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -6,6 +6,11 @@ import { useNavigate, useParams } from 'react-router-dom'
 const ProductDetailPage = () => {
   const {id} = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Khi component được hiển thị, cuộn lên đầu trang
+    window.scrollTo(0, 0);
+  }, []); // [] đảm bảo useEffect chỉ chạy sau khi component được render lần đầu tiên
 
   return (
     <div style={{ backgroundColor: '#efefef' }}>

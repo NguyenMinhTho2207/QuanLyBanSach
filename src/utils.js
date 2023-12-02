@@ -25,3 +25,16 @@ export function getItem(label, key, icon, children, type) {
     type,
   };
 }
+
+export const convertPrice = (price) => {
+  try {
+    if (price) {
+      const result  = Number(price).toLocaleString('vi-VN');
+      return `${result} VNĐ`
+    }
+
+    return 0;
+  } catch (error) {
+    return 0
+  }
+}

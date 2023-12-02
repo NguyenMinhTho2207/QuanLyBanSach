@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import * as UserService from '../../services/UserService'
 import { useDispatch } from 'react-redux'
 import { resetUser } from '../../redux/slice/userSlice'
+import { resetOrder } from '../../redux/slice/orderSlice'
 import Loading from '../LoadingComponent/Loading';
 import Logo from '../../assets/images/logo-no-background.png'
 
@@ -15,6 +16,7 @@ const NavbarLoginComponent = ({ isHiddenAddress = false, isHiddenCart = false })
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const user = useSelector((state) => state.user);
+    const order = useSelector((state) => state.order);
     const [userName, setUserName] = useState('');
     const [userAvatar, setUserAvatar] = useState('');
 
@@ -35,12 +37,13 @@ const NavbarLoginComponent = ({ isHiddenAddress = false, isHiddenCart = false })
         setUserAvatar(user?.avatar);
         setUserName(user?.name);
         setLoading(false);
-    }, [user?.name])
+    }, [user?.name, user?.avatar])
 
     const handleLogout = async () => {
         setLoading(true);
         await UserService.logoutUser();
         localStorage.removeItem('access_token');
+        dispatch(resetOrder());
         dispatch(resetUser());
         setLoading(false);
         navigate("/");
@@ -94,12 +97,14 @@ const NavbarLoginComponent = ({ isHiddenAddress = false, isHiddenCart = false })
                 )}
 
                 {!isHiddenCart && (
-                    <WrapperHeaderLogin style={{cursor: 'pointer', color: '#fff'}}>
-                        <Badge count={4} size='small' style={{top: '5px', right: '5px'}}>
-                            <ShoppingCartOutlined style={{color: '#fff', fontSize: '30px'}}/>
-                        </Badge>
-                        <span style={{marginLeft: '4px'}}>Giỏ Hàng</span>
-                    </WrapperHeaderLogin>
+                    <div onClick={() => navigate('/order')} style={{cursor: 'pointer'}}>
+                        <WrapperHeaderLogin style={{cursor: 'pointer', color: '#fff'}}>
+                            <Badge count={order?.orderItems?.length} size='small' style={{top: '5px', right: '5px'}}>
+                                <ShoppingCartOutlined style={{color: '#fff', fontSize: '30px'}}/>
+                            </Badge>
+                            <span style={{marginLeft: '4px'}}>Giỏ Hàng</span>
+                        </WrapperHeaderLogin>
+                    </div>
                 )}
                 <Loading isLoading={loading}>
                     { user?.access_token ? (

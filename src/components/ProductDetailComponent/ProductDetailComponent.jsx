@@ -6,12 +6,16 @@ import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import * as ProductService from '../../services/ProductService'
 import { useQuery } from '@tanstack/react-query'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { addOrderProduct } from '../../redux/slice/orderSlice';
+import { convertPrice } from '../../utils';
+import { increaseQuantity, decreaseQuantity, removeOrderProduct, removeAllOrderProduct, selectedOrder  } from '../../redux/slice/orderSlice';
 
 const ProductDetailComponent = ({productId}) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useDispatch();
     const [quantityProduct, setQuantityProduct] = useState(1);
     const user = useSelector((state) => state.user);
     const onChange = (value) => {
@@ -28,19 +32,18 @@ const ProductDetailComponent = ({productId}) => {
     }
 
     const handleChangeCount = (type) => {
+        // const product_id = productDetails?.id;
         if (type === 'increase') {
-            setQuantityProduct((quantityProduct) + 1);
+            if (quantityProduct + 1 <= productDetails?.quantity) {
+                setQuantityProduct(quantityProduct + 1);
+                // dispatch(increaseQuantity({product_id}));
+            }
         }
         else {
             if (quantityProduct > 1) {
                 setQuantityProduct(quantityProduct - 1);
+                // dispatch(decreaseQuantity({product_id}));
             }
-        }
-    }
-
-    const handleAddOrderProduct = () => {
-        if (!user?.id) {
-            navigate(`/sign-in`, {state: location?.pathname});
         }
     }
 
@@ -52,6 +55,26 @@ const ProductDetailComponent = ({productId}) => {
         },
     });
 
+    const handleAddOrderProduct = () => {
+        if (!user?.id) {
+            navigate(`/sign-in`, {state: location?.pathname});
+        }
+        else {
+            dispatch(addOrderProduct({
+                orderItem: {
+                    product_id: productDetails?.id,
+                    product_name: productDetails?.product_name,
+                    image: productDetails?.image,
+                    quantity: quantityProduct,
+                    quantityInStock: productDetails?.quantity,
+                    unit_price: productDetails?.price,
+                    subtotal: productDetails?.price * quantityProduct,
+                    discount: productDetails?.discount
+                }
+            }));
+        }
+    }
+    
     const handleKeyPress = (e) => {
         // Cho phép các phím số, phím mũi tên lên, xuống, và phím xóa
         const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'ArrowUp', 'ArrowDown', 'Backspace'];
@@ -60,7 +83,7 @@ const ProductDetailComponent = ({productId}) => {
             e.preventDefault();
         }
     };
-
+    
     return (
         <Row style={{padding: '16px', backgroundColor: 'white', borderRadius: '8px' }}>
             <Col span={10} style={{ borderRight: '1px solid #e5e5e5', paddingRight: '8px' }}>
@@ -91,7 +114,7 @@ const ProductDetailComponent = ({productId}) => {
                         <WrapperStyleTextSell> | Đã bán 1000+</WrapperStyleTextSell>
                     </div>
                     <WrapperPriceProduct>
-                        <WrapperPriceTextProduct>{Number(productDetails?.price).toLocaleString('vi-VN')} VNĐ</WrapperPriceTextProduct>
+                        <WrapperPriceTextProduct>{convertPrice(productDetails?.price)}</WrapperPriceTextProduct>
                     </WrapperPriceProduct>
                     <WrapperAddresstProduct>
                         <span>Giao đến&nbsp;</span>
@@ -104,7 +127,7 @@ const ProductDetailComponent = ({productId}) => {
                             <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }} onClick={() => handleChangeCount('decrease')}>
                                 <MinusOutlined style={{ color: '#000', fontSize: '20px' }} />
                             </button>
-                            <WrapperInputNumber onChange={onChange} value={quantityProduct} min={1} type='number' onKeyDown={handleKeyPress}/>
+                            <WrapperInputNumber onChange={onChange} value={quantityProduct} min={1} max={productDetails?.quantity} type='number' onKeyDown={handleKeyPress}/>
                             <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }} onClick={() => handleChangeCount('increase')}>
                                 <PlusOutlined style={{ color: '#000', fontSize: '20px' }} />
                             </button>
@@ -112,7 +135,7 @@ const ProductDetailComponent = ({productId}) => {
                     </div>
                     <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                         <ButtonComponent
-                            bordered={false}
+                            // bordered={false}
                             size={40}
                             styleButton={{ 
                                 background: 'rgb(255, 57, 69)', 
@@ -122,7 +145,7 @@ const ProductDetailComponent = ({productId}) => {
                                 borderRadius: '4px'
                             }}
                             onClick={handleAddOrderProduct}
-                            textButton={'Chọn mua'}
+                            textButton={'Thêm giỏ hàng'}
                             styleTextButton={{ color: '#fff', ontSize: '15px', fontWeight: '700' }}
                         >
                         </ButtonComponent>

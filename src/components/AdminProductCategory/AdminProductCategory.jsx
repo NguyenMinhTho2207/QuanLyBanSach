@@ -5,7 +5,7 @@ import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant
 import TableComponent from '../TableComponent/TableComponent'
 import InputComponent from '../InputComponent/InputComponent'
 import * as ProductCategoryService from '../../services/ProductCategoryService'
-import { useMutationHooks } from '../../hooks/userMutationHook'
+import { useMutationHooks } from '../../hooks/useMutationHook'
 import Loading from '../LoadingComponent/Loading'
 import * as message from '../Message/Message'
 import ModalComponent from '../ModalComponent/ModalComponent'

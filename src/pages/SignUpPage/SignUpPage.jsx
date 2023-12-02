@@ -7,7 +7,7 @@ import { Image } from 'antd'
 import { EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import * as UserService from '../../services/UserService'
-import { useMutationHooks } from '../../hooks/userMutationHook'
+import { useMutationHooks } from '../../hooks/useMutationHook'
 import Loading from '../../components/LoadingComponent/Loading'
 import * as message from '../../components/Message/Message'
 
@@ -57,10 +57,17 @@ const SignUpPage = () => {
     })
   }
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSignUp();
+    }
+  };
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0, 0, 0, 0.53)', height: '100vh' }}>
       <div style={{ display: 'flex', width: '800px', height: '445px', borderRadius: '8px', background: '#fff' }}>
-        <WrapperContainerLeft>
+        <WrapperContainerLeft onKeyDown={handleKeyDown}>
           <h1>Tạo tài khoản</h1>
           <p>Tạo tài khoản hoặc đăng nhập</p>
           <InputForm style={{ marginBottom: '10px' }} placeholder='abc@gmail.com' value={email} onChange={handleOnChangeEmail}></InputForm>

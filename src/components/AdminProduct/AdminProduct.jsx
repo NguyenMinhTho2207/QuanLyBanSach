@@ -5,10 +5,10 @@ import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant
 import TableComponent from '../TableComponent/TableComponent'
 import InputComponent from '../InputComponent/InputComponent'
 import { WrapperUploadFile } from '../../pages/ProfilePage/style'
-import { getBase64 } from '../../utils'
+import { convertPrice, getBase64 } from '../../utils'
 import * as ProductService from '../../services/ProductService'
 import * as ProductCategoryService from '../../services/ProductCategoryService'
-import { useMutationHooks } from '../../hooks/userMutationHook'
+import { useMutationHooks } from '../../hooks/useMutationHook'
 import Loading from '../LoadingComponent/Loading'
 import * as message from '../../components/Message/Message'
 import { useQuery } from '@tanstack/react-query'
@@ -377,7 +377,7 @@ const AdminProduct = () => {
         }
       },
       render: (text) => (
-        <span>{Number(text).toLocaleString('vi-VN')} VNĐ</span>
+        <span>{convertPrice(text)}</span>
       )
     },
     {

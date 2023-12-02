@@ -5,7 +5,7 @@ import InputForm from '../../components/InputForm/InputForm'
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
 import { useDispatch, useSelector } from 'react-redux'
 import * as UserService from '../../services/UserService'
-import { useMutationHooks } from '../../hooks/userMutationHook'
+import { useMutationHooks } from '../../hooks/useMutationHook'
 import Loading from '../../components/LoadingComponent/Loading'
 import * as message from '../../components/Message/Message'
 import { updateUser } from '../../redux/slice/userSlice'
@@ -27,7 +27,7 @@ const ProfilePage = () => {
   const mutation = useMutationHooks(
     (data) => { 
       const { id, access_token, ...rests } = data;
-      UserService.updateUser(id, rests, access_token);
+      UserService.updateUser(id, access_token, rests);
     }
   );
 
