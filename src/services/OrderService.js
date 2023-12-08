@@ -47,4 +47,12 @@ export const cancelOrder = async (id, access_token, orderItems, userId ) => {
     })
     return res.data
 }
- 
+
+export let getAllOrder = async (access_token) => {
+    let res = await axiosJWT.get(`${process.env.REACT_APP_API_URL}/order/get-all-orders`, {
+        headers: {
+            authorization: `Bearer ${access_token}`,
+        }
+    });
+    return res.data;
+}

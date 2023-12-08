@@ -1,11 +1,12 @@
 import { Menu } from 'antd'
 import React, { useState } from 'react'
 import { getItem } from '../../utils';
-import { UserOutlined, AppstoreOutlined, DropboxOutlined } from '@ant-design/icons'
+import { UserOutlined, AppstoreOutlined, DropboxOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import NavbarLoginComponent from '../../components/NavbarLoginComponent/NavbarLoginComponent';
 import AdminUser from '../../components/AdminUser/AdminUser';
 import AdminProduct from '../../components/AdminProduct/AdminProduct';
 import AdminProductCategory from '../../components/AdminProductCategory/AdminProductCategory';
+import AdminOrder from '../../components/AdminOrder/AdminOrder';
 
 export const AdminPage = () => {
   const items  = [
@@ -14,6 +15,8 @@ export const AdminPage = () => {
     getItem('Sản phẩm', 'product', <DropboxOutlined />),
 
     getItem('Danh mục', 'category', <AppstoreOutlined />),
+
+    getItem('Đơn hàng', 'order', <ShoppingCartOutlined />),
   ];
 
   const [keySelected, setKeySelected] = useState('');
@@ -33,6 +36,11 @@ export const AdminPage = () => {
       case 'category':
         return (
           <AdminProductCategory></AdminProductCategory>
+        )
+
+      case 'order':
+        return (
+          <AdminOrder></AdminOrder>
         )
 
       default:
