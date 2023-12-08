@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { addOrderProduct } from '../../redux/slice/orderSlice';
 import { convertPrice } from '../../utils';
-import { increaseQuantity, decreaseQuantity, removeOrderProduct, removeAllOrderProduct, selectedOrder  } from '../../redux/slice/orderSlice';
 
 const ProductDetailComponent = ({productId}) => {
     const navigate = useNavigate();

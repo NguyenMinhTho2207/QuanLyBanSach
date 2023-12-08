@@ -15,6 +15,7 @@ const NavbarLoginComponent = ({ isHiddenAddress = false, isHiddenCart = false })
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
+    const [isOpenPopup, setIsOpenPopup] = useState(false);
     const user = useSelector((state) => state.user);
     const order = useSelector((state) => state.order);
     const [userName, setUserName] = useState('');
@@ -52,12 +53,33 @@ const NavbarLoginComponent = ({ isHiddenAddress = false, isHiddenCart = false })
     const content = (
         <div>
             {user?.is_admin && (
-                <WrapperContentPopup onClick={() => {navigate("/system/admin")}}>Quản lý hệ thống</WrapperContentPopup>
+                <WrapperContentPopup onClick={() => handleClickNavigate("admin")}>Quản lý hệ thống</WrapperContentPopup>
             )}
-            <WrapperContentPopup onClick={() => {navigate("/profile-user")}}>Thông tin người dùng</WrapperContentPopup>
-            <WrapperContentPopup onClick={handleLogout}>Đăng xuất</WrapperContentPopup>
+            <WrapperContentPopup onClick={() => handleClickNavigate("profile")}>Thông tin người dùng</WrapperContentPopup>
+            <WrapperContentPopup onClick={() => handleClickNavigate("my-order")}>Đơn hàng của tôi</WrapperContentPopup>
+            <WrapperContentPopup onClick={() => handleClickNavigate()}>Đăng xuất</WrapperContentPopup>
         </div>
     );
+
+    const handleClickNavigate = (type) => {
+        if (type === 'profile') {
+            navigate("/profile-user");
+        }
+        else if (type === 'admin') {
+            navigate("/system/admin")
+        }
+        else if (type === 'my-order') {
+            navigate("/my-order", {state: {
+                id: user?.id,
+                token: user?.access_token
+            }})
+        }
+        else {
+            handleLogout();
+        }
+
+        setIsOpenPopup(false);
+    }
 
     useEffect(() => {
         const handleScroll = () => {
@@ -115,8 +137,8 @@ const NavbarLoginComponent = ({ isHiddenAddress = false, isHiddenCart = false })
                                 ) : (
                                     <UserOutlined style={{fontSize: '30px', color: 'white', margin: '0 10px'}}/>
                                 )}
-                                <WrapperPopover content={content} trigger="click">
-                                    <div style={{color: 'white', cursor: 'pointer'}}>{userName?.length ? userName : user?.email}</div>
+                                <WrapperPopover content={content} trigger="click" open={isOpenPopup}>
+                                    <div style={{color: 'white', cursor: 'pointer'}} onClick={() => setIsOpenPopup((prev) => !prev)}>{userName?.length ? userName : user?.email}</div>
                                 </WrapperPopover>
                             </WrapperHeaderLogin>
                             
