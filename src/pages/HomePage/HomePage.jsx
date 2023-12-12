@@ -1,73 +1,55 @@
-import React from 'react'
-import SliderComponent from '../../components/SliderComponent/SliderComponent'
-import slide1 from '../../assets/images/slide1.jpg'
-import slide2 from '../../assets/images/slide2.jpg'
-import { Col, Row } from 'antd'
-import CardComponent from '../../components/CardComponent/CardComponent'
-import { WrapperButtonMore, WrapperProducts } from './style'
-import FooterComponent from '../../components/FooterComponent/FooterComponent'
-import { useQuery } from '@tanstack/react-query'
-import * as ProductService from '../../services/ProductService';
+import React from 'react';
+import SliderComponent from '../../components/SliderComponent/SliderComponent';
+import slide1 from '../../assets/images/slide1.jpg';
+import slide2 from '../../assets/images/slide2.jpg';
+import { Col, Row } from 'antd';
+import FooterComponent from '../../components/FooterComponent/FooterComponent';
+import verify from '../../assets/images/chat-luong-cua-cuon-removebg-preview.png'
+import delivery from '../../assets/images/iconen_vervoer_4_auto-01-80x80.png'
 
 const HomePage = () => {
-  const fetchProductAll = async () => {
-    const res = await ProductService.getAllProduct();
-
-    return res;
-  }
-
-  const { isLoading, data: products } = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchProductAll,
-    retry: 3,
-    retryDelay: 1000,
-  });
 
   return (
     <div style={{ backgroundColor: '#efefef' }}>
-      <Row>
+      <Row justify="center" align="middle">
         <Col span={24}>
           <SliderComponent arrImages={[slide1, slide2]}></SliderComponent>
         </Col>
       </Row>
-
-      <div className="container" style={{padding: '20px 200px 0px 200px', height: '1000px' }}>
-        {/* <NavbarComponent></NavbarComponent> */}
-        <WrapperProducts>
-          {products?.data?.map((product) => {
-            return (
-              <CardComponent 
-                key={product.id} 
-                quantity={product.quantity} 
-                description={product.description} 
-                image={product.image}
-                productName={product.product_name}
-                price={product.price}
-                rating={product.rating}
-                categoryId={product.category_id}
-                discount={product.discount}
-                soldQuantity={product.sold_quantity}
-                id={product.id} 
-              ></CardComponent>
-            )
-          })}
-        </WrapperProducts>
-        <div style={{width: '100%', display: 'flex', justifyContent: 'center', marginTop: '10px'}}>
-          <WrapperButtonMore textButton="Xem thêm" type="outline" 
-            styleButton={{
-              border: '1px solid rgb(11, 116, 229)', 
-              color: 'rgb(11, 116, 229)',
-              width: '240px',
-              height: '38px',
-              borderRadius: '4px',
-            }}
-            styleTextButton={{fontWeight: 500}}>
-          </WrapperButtonMore>
-        </div>
+      <div>
+        <Row justify="center">
+          <Col xs={24} sm={22} md={20} lg={18} xl={16} style={{textAlign: 'center', marginTop: '10px', background: '#2196F3', color: '#fff', padding: '0px'}}>
+            <h3>Sản phẩm bán chạy</h3>
+          </Col>
+        </Row>
+        <Row justify="center">
+            <Col xs={24} sm={22} md={20} lg={18} xl={16} style={{ textAlign: 'center', marginTop: '10px', color: '#fff', padding: '0px' }}>
+              <Row gutter={[16, 16]}>
+                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: '10px', border: '1px solid #000' }}>
+                    <img src={verify} alt="" style={{ maxWidth: '100%', borderRadius: '10px 10px 0 0' }} />
+                    <span style={{ padding: '10px', color: 'red'} }><strong>CAM KẾT HÀNG CHÍNH HÃNG</strong></span>
+                  </div>
+                </Col>
+                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: '10px', border: '1px solid #000' }}>
+                    <img src={delivery} alt="" style={{ maxWidth: '100%', borderRadius: '10px 10px 0 0' }} />
+                    <span style={{ padding: '10px', color: '#4D65DB' }}><strong>GIAO HÀNG TẬN NƠI</strong></span>
+                  </div>
+                </Col>
+                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: '10px', border: '1px solid #000' }}>
+                    <img src={verify} alt="" style={{ maxWidth: '100%', borderRadius: '10px 10px 0 0' }} />
+                    <span style={{ padding: '10px', color: '#339966' }}><strong>TƯ VẤN NHIỆT TÌNH</strong></span>
+                  </div>
+                </Col>
+              </Row>
+          </Col>
+        </Row>
       </div>
       <FooterComponent></FooterComponent>
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;

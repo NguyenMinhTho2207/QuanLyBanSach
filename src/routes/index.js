@@ -21,7 +21,7 @@ export const routes = [
         isShowHeader: true
     },
     {
-        path: '/course',
+        path: '/courses',
         page: CoursePage,
         isShowHeader: true
     },

@@ -7,6 +7,7 @@ import AdminUser from '../../components/AdminUser/AdminUser';
 import AdminProduct from '../../components/AdminProduct/AdminProduct';
 import AdminProductCategory from '../../components/AdminProductCategory/AdminProductCategory';
 import AdminOrder from '../../components/AdminOrder/AdminOrder';
+import AdminCourse from '../../components/AdminCourse/AdminCourse';
 
 export const AdminPage = () => {
   const items  = [
@@ -17,6 +18,8 @@ export const AdminPage = () => {
     getItem('Danh mục', 'category', <AppstoreOutlined />),
 
     getItem('Đơn hàng', 'order', <ShoppingCartOutlined />),
+
+    getItem('Khóa học', 'course', <ShoppingCartOutlined />),
   ];
 
   const [keySelected, setKeySelected] = useState('');
@@ -41,6 +44,11 @@ export const AdminPage = () => {
       case 'order':
         return (
           <AdminOrder></AdminOrder>
+        )
+
+      case 'course':
+        return (
+          <AdminCourse></AdminCourse>
         )
 
       default:

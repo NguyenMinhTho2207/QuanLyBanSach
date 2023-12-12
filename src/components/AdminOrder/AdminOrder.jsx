@@ -143,7 +143,7 @@ const AdminOrder = () => {
     },
   ];
 
-  const dataTable = orders?.data.map((order) => {
+  const dataTable = orders?.data?.map((order) => {
     return {
       ...order, 
       key: order?.id,

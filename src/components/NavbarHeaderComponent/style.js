@@ -31,6 +31,12 @@ export const WrapperNavbarMenuContain = styled.ul `
             &:hover {
                 background-color: #0077C0; /* Màu nền xanh đậm khi hover */
             }
+
+            &.active { /* Styles for the active class */
+                background-color: white;
+                color: black;
+                /* Add any other styles for the active state */
+            }
         }
     }
 `
