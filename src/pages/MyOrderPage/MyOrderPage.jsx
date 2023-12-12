@@ -124,7 +124,7 @@ const MyOrderPage = () => {
         <div style={{height: '100%', width: '1270px', margin: '0 auto'}}>
           <h4><span style={{cursor: 'pointer'}} onClick={() => {navigate(`/`)}}>Trang chủ</span> - Đơn hàng của tôi</h4>
           <WrapperListOrder>
-            {data?.map((order) => {
+            {data?.length > 0 && data?.map((order) => {
               return (
                 <WrapperItemOrder key={order?.id}>
                   <WrapperStatus>
