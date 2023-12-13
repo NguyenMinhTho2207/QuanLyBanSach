@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
-import ProductDetailComponent from '../../components/ProductDetailComponent/ProductDetailComponent'
+import CourseDetailComponent from '../../components/CourseDetailComponent/CourseDetailComponent'
 import FooterComponent from '../../components/FooterComponent/FooterComponent'
 import { useNavigate, useParams } from 'react-router-dom'
 
-const ProductDetailPage = () => {
+const CourseDetailPage = () => {
   const {id} = useParams();
   const navigate = useNavigate();
 
@@ -15,12 +15,12 @@ const ProductDetailPage = () => {
   return (
     <div style={{ backgroundColor: '#efefef' }}>
       <div style={{ padding: '20px 200px 0px 200px', height: '1000px' }}>
-        <h4 style={{color: '#e68d00'}}><span style={{cursor: 'pointer'}} onClick={() => {navigate(`/`)}}>Trang chủ</span> / <span style={{cursor: 'pointer'}} onClick={() => {navigate(`/products`)}}>Sản phẩm</span> / Chi tiết sản phẩm</h4>
-        <ProductDetailComponent productId={id}/>
+        <h4 style={{color: '#e68d00'}}><span style={{cursor: 'pointer'}} onClick={() => {navigate(`/`)}}>Trang chủ</span> / <span style={{cursor: 'pointer'}} onClick={() => {navigate(`/courses`)}}>Khóa học</span> / Chi tiết khóa học</h4>
+        <CourseDetailComponent courseId={id}/>
       </div>
       <FooterComponent></FooterComponent>
     </div>
   )
 }
 
-export default ProductDetailPage
+export default CourseDetailPage

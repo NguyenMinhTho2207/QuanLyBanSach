@@ -337,7 +337,7 @@ const AdminCourse = () => {
       ...getColumnSearchProps('description', 'danh mục khóa học')
     },
     {
-      title: 'Số lượng đã mua',
+      title: 'Đã đăng ký',
       dataIndex: 'student_count',
       sorter: (a, b) => a.student_count - b.student_count,
       filters: [
@@ -496,7 +496,7 @@ const AdminCourse = () => {
 
   return (
     <div>
-        <WrapperHeader>Quản lý khóa học</WrapperHeader>
+        <WrapperHeader>Quản lý danh sách khóa học</WrapperHeader>
         <div style={{ marginTop: '10px'}}>
           <Button style={{ height: '100px', width: '100px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '60px' }}/></Button>
         </div>
@@ -542,6 +542,14 @@ const AdminCourse = () => {
               </Form.Item>
 
               <Form.Item
+                label="Thời gian học (tháng)"
+                name="schedule"
+                rules={[{ required: true, message: 'Vui lòng nhập thời gian học!' }]}
+              >
+                <InputComponent type="number" value={ stateCourses.schedule } onChange={handleOnChange} onKeyDown={handleKeyPress} min="1" name="schedule"/>
+              </Form.Item>
+
+              <Form.Item
                 label="Mô tả khóa học"
                 name="description"
                 rules={[{ required: true, message: 'Vui lòng nhập mô tả khóa học!' }]}
@@ -554,7 +562,7 @@ const AdminCourse = () => {
                 name="price"
                 rules={[{ required: true, message: 'Vui lòng nhập giá khóa học!' }]}
               >
-                <InputComponent type="number" value={ stateCourses.price } onChange={handleOnChange} name="price" min="1"/>
+                <InputComponent type="number" value={ stateCourses.price } onChange={handleOnChange} onKeyDown={handleKeyPress} name="price" min="1"/>
               </Form.Item>
 
               <Form.Item
@@ -601,7 +609,15 @@ const AdminCourse = () => {
                 name="teacher"
                 rules={[{ required: true, message: 'Vui lòng nhập tên giảng viên!' }]}
               >
-                <InputComponent value={ stateCoursesDetails.teacher } onChange={handleOnChange} name="teacher"/>
+                <InputComponent value={ stateCoursesDetails.teacher } onChange={handleOnChangeDetails} name="teacher"/>
+              </Form.Item>
+
+              <Form.Item
+                label="Thời gian học"
+                name="schedule"
+                rules={[{ required: true, message: 'Vui lòng nhập thời gian học!' }]}
+              >
+                <InputComponent value={ stateCoursesDetails.schedule } onChange={handleOnChangeDetails} name="schedule"/>
               </Form.Item>
 
               <Form.Item
@@ -609,7 +625,7 @@ const AdminCourse = () => {
                 name="description"
                 rules={[{ required: true, message: 'Vui lòng nhập mô tả khóa học!' }]}
               >
-                <InputComponent value={ stateCoursesDetails.description } onChange={handleOnChange} name="description"/>
+                <InputComponent value={ stateCoursesDetails.description } onChange={handleOnChangeDetails} name="description"/>
               </Form.Item>
 
               <Form.Item
@@ -617,7 +633,7 @@ const AdminCourse = () => {
                 name="price"
                 rules={[{ required: true, message: 'Vui lòng nhập giá khóa học!' }]}
               >
-                <InputComponent type="number" value={ stateCoursesDetails.price } onChange={handleOnChange} name="price" min="1"/>
+                <InputComponent type="number" value={ stateCoursesDetails.price } onChange={handleOnChangeDetails} name="price" min="1"/>
               </Form.Item>
 
               <Form.Item

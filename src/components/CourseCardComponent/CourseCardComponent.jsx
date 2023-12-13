@@ -9,7 +9,7 @@ const CourseCardComponent = (props) => {
     const { description, image, courseName, price, subscribed, teacher, id } = props;
     const navigate = useNavigate();
     const handleDetailsCourse = (id) => {
-        navigate(`/course-details/${id}`);
+        navigate(`/courses-details/${id}`);
     }
 
     return (

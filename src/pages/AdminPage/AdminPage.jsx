@@ -1,13 +1,14 @@
 import { Menu } from 'antd'
 import React, { useState } from 'react'
 import { getItem } from '../../utils';
-import { UserOutlined, AppstoreOutlined, DropboxOutlined, ShoppingCartOutlined } from '@ant-design/icons'
+import { UserOutlined, AppstoreOutlined, DropboxOutlined, ShoppingCartOutlined, AccountBookOutlined } from '@ant-design/icons'
 import NavbarLoginComponent from '../../components/NavbarLoginComponent/NavbarLoginComponent';
 import AdminUser from '../../components/AdminUser/AdminUser';
 import AdminProduct from '../../components/AdminProduct/AdminProduct';
 import AdminProductCategory from '../../components/AdminProductCategory/AdminProductCategory';
 import AdminOrder from '../../components/AdminOrder/AdminOrder';
 import AdminCourse from '../../components/AdminCourse/AdminCourse';
+import AdminCourseDetail from '../../components/AdminCourseDetail/AdminCourseDetail';
 
 export const AdminPage = () => {
   const items  = [
@@ -19,7 +20,9 @@ export const AdminPage = () => {
 
     getItem('Đơn hàng', 'order', <ShoppingCartOutlined />),
 
-    getItem('Khóa học', 'course', <ShoppingCartOutlined />),
+    getItem('Danh sách Khóa học', 'course', <AccountBookOutlined />),
+
+    getItem('Chi tiết đăng ký khóa học', 'course-detail', <AccountBookOutlined />),
   ];
 
   const [keySelected, setKeySelected] = useState('');
@@ -49,6 +52,11 @@ export const AdminPage = () => {
       case 'course':
         return (
           <AdminCourse></AdminCourse>
+        )
+
+      case 'course-detail':
+        return (
+          <AdminCourseDetail></AdminCourseDetail>
         )
 
       default:

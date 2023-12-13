@@ -43,3 +43,29 @@ export let deleteMultipleCourses = async (data, access_token) => {
     });
     return res.data;
 }
+
+// register course
+export let registerCourse = async (data) => {
+    let res = await axios.post(`${process.env.REACT_APP_API_URL}/course/register-course`, data);
+    return res.data;
+}
+
+export let getRegisterCourse = async (userId, courseId) => {
+    var data = {userId, courseId};
+    let res = await axios.post(`${process.env.REACT_APP_API_URL}/course/get-register-course/`, data);
+
+    return res.data;
+}
+
+export let getAllRegisterCourse = async () => {
+    let res = await axios.get(`${process.env.REACT_APP_API_URL}/course/get-all-register-course/`);
+
+    return res.data;
+}
+
+export let cancelRegisterCourse = async (userId, courseId) => {
+    var data = {userId, courseId};
+    let res = await axios.post(`${process.env.REACT_APP_API_URL}/course/cancel-register-course/`, data);
+
+    return res.data;
+}

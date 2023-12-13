@@ -13,6 +13,7 @@ import PaymentPage from "../pages/PaymentPage/PaymentPage";
 import OrderSuccess from "../pages/OrderSuccess/OrderSuccess";
 import MyOrderPage from "../pages/MyOrderPage/MyOrderPage";
 import DetailsOrderPage from "../pages/DetailsOrderPage/DetailsOrderPage";
+import CourseDetailPage from "../pages/CourseDetailPage/CourseDetailPage";
 
 export const routes = [
     {
@@ -23,6 +24,11 @@ export const routes = [
     {
         path: '/courses',
         page: CoursePage,
+        isShowHeader: true
+    },
+    {
+        path: '/courses-details/:id',
+        page: CourseDetailPage,
         isShowHeader: true
     },
     {
